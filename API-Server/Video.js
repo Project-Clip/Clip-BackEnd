@@ -1,4 +1,4 @@
-var { google } = require('googleapis');
+var {google} = require('googleapis');
 var service = google.youtube('v3');
 var exports = (module.exports = {});
 
