@@ -29,7 +29,8 @@ exports.Data = function (tokenkey, callback) {
 				let playlistNum = 0;
 				let playlistData = []; //반환 된 정보 push할 변수
 				console.log('nextPageToken : ' + response.data.nextPageToken);
-				console.log('총 검색결과 : ' + JSON.stringify(response.data.pageInfo, null, 4));
+				// console.log('총 검색결과 : ' + JSON.stringify(response.data.pageInfo, null, 4));
+				console.log('검색된 결과 : ' + playlist.length);
 				while (playlistNum < playlist.length) {
 					// console.log('재생목록 id : ' + playlistData.id);
 					// console.log('생성 날짜 : ' + playlistData.snippet.publishedAt);

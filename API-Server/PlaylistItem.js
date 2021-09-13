@@ -4,7 +4,6 @@ var exports = (module.exports = {});
 var Tunnel = require('./Tunnel.js');
 
 exports.Data = function (tokenkey, callback) {
-	console.log(Tunnel.data);
 	service.playlistItems.list(
 		{
 			playlistId: Tunnel.data, //재생목록의 id값
