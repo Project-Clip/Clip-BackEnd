@@ -1,12 +1,12 @@
 var {google} = require('googleapis');
 var service = google.youtube('v3');
 var exports = (module.exports = {});
-var Tunnel = require('./Tunnel.js');
+// var Tunnel = require('./Tunnel.js');
 
 exports.Data = function (tokenkey, callback) {
 	service.playlistItems.list(
 		{
-			playlistId: Tunnel.data, //재생목록의 id값
+			playlistId: 'PL920OTfqSyzdZYiKEb2nMkHTS5T8HW3w8', //재생목록의 id값
 			key: 'AIzaSyADYJgNuh0hvCN_07d4ZF4Snb9KficArr8', //googleAPI에서 부여받은 개인 key
 			part: 'snippet',
 			fields: 'nextPageToken, pageInfo, items(id, snippet(channelId, resourceId(videoId)))',
@@ -29,8 +29,12 @@ exports.Data = function (tokenkey, callback) {
 				let playlistItemNum = 0;
 				let playlistItemData = []; //반환 된 정보 push할 변수
 				while (playlistItemNum < playlistItem.length) {
-					console.log('채널 id : ' + playlistItemData.snippet.channelId);
-					console.log('영상 id : ' + playlistItemData.snippet.resourceId.videoId);
+					const latestId = '4D3wdwyUG6s'; //DataBase에서 가장 최신에 등록 된 ID를 Query하여 변수로 선언합니다.
+					// console.log('채널 id : ' + playlistItemData.snippet.channelId);
+					console.log('영상 id : ' + playlistItem[playlistItemNum].snippet.resourceId.videoId);
+					if (playlistItem[playlistItemNum].snippet.resourceId.videoId == latestId) {
+						break;
+					}
 					playlistItemData.push(playlistItem[playlistItemNum]);
 					// console.log(playlistItemData);
 					playlistItemNum++;

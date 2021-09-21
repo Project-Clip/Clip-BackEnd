@@ -37,6 +37,7 @@ PlayList = (token) => {
 		console.log('가져온 정보입니다. : ' + response[0].snippet.title); //반복문으로 돌려두면 됩니다.
 		//조건문으로 stop 해줍시다.
 		if (response.length == 50) {
+			//만약 조회데이터가 50개 이상일 경우
 			NoNameFunc(response, apicode);
 		}
 	});
@@ -45,16 +46,20 @@ PlayList = (token) => {
 PlayListItem = (token) => {
 	const apicode = 'playlistitem';
 	PlaylistItem.Data(token, function (response) {
-		console.log('가져온 정보입니다. : ' + response[0].snippet); //반복문으로 돌려두면 됩니다.
-		NoNameFunc(response, apicode);
+		console.log('가져온 정보입니다. : ' + response[2].snippet.resourceId.videoId); //반복문으로 돌려두면 됩니다.
+		if (response.length == 50) {
+			//만약 조회데이터가 50개 이상일 경우
+			NoNameFunc(response, apicode);
+		}
 	});
 };
 
 Video = () => {
-	const apicode = video;
-	Video.Data(function (response) {
+	const apicode = 'video';
+	Video.Data(token, function (response) {
 		console.log('가져온 정보입니다.' + response);
 	});
 };
 
-PlayList(undefined);
+// PlayList(undefined);
+PlayListItem(undefined);
