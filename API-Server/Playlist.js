@@ -1,7 +1,12 @@
 var {google} = require('googleapis');
 var service = google.youtube('v3');
 var exports = (module.exports = {});
-// var Tunnel = require('./Tunnel.js');
+var fs = require('fs');
+
+fs.readFile('./API-Server/Apikey.txt', 'utf-8', (err, data) => {
+	if (err) return console.log(err);
+	console.log(data);
+});
 
 // console.log(Tunnel.pageTokenKey);
 exports.Data = function (tokenkey, callback) {
@@ -41,10 +46,10 @@ exports.Data = function (tokenkey, callback) {
 					// console.log('썸네일 : ' + playlistData.snippet.thumbnails.high.url);
 					// console.log('채널 이름 : ' + playlistData.snippet.channelTitle);
 					// console.log(playlistData.snippet.tags);
-					/*if (playlist[playlistNum].id == latestId) {
+					if (playlist[playlistNum].id == latestId) {
 						//만약 현재 Api로 요청하는 정보가 Database에서 가져온 id값과 일치하는 경우, Api요청을 중지합니다.
 						break;
-					}*/
+					}
 					playlistData.push(playlist[playlistNum]);
 					playlistNum++;
 					if (playlistNum == playlist.length) {
