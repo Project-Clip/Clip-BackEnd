@@ -12,9 +12,9 @@ var exports = (module.exports = {});
 // });
 //기존 sqlconnection.js script
 var con = mysql.createConnection({
-	host: '127.0.0.1',
-	user: 'root',
-	password: '111111',
+	host: '127.31.13.7',
+	user: 'admin',
+	password: 'qlalfqjsgh486',
 	database: 'webdrama',
 	charset: 'utf8mb4',
 });
@@ -55,7 +55,8 @@ PlayList = (token) => {
 		let datanum = 0;
 		while (datanum < response.length) {
 			let data = response[datanum].snippet;
-			var sql = 'INSERT INTO episode_video(title, description, channelId, likeCount) VALUES(?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
+			var sql =
+				'INSERT INTO webdrama_main_episodelist(List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES(?,?,?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
 			var params = [];
 			params.push(data.title);
 			params.push(data.description);
@@ -90,7 +91,7 @@ PlayListItem = (token) => {
 		let datanum = 0;
 		while (datanum < response.length) {
 			let data = response[datanum].snippet;
-			let sql = 'INSERT INTO episode_video(title, description, channelId, likeCount) VALUES(?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
+			let sql = 'INSERT INTO upload(Up_id, Up_video_id) VALUES(?,?)'; //컬럼은 따로 변경 부탁드립니다.
 			let params = [];
 			params.push(data.channelId);
 			params.push(data.resourceId.videoId);
