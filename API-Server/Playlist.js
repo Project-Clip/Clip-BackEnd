@@ -2,11 +2,9 @@ var {google} = require('googleapis');
 var service = google.youtube('v3');
 var exports = (module.exports = {});
 var fs = require('fs');
+const Fileread = require('./Fileread.js');
 
-fs.readFile('./API-Server/Apikey.txt', 'utf-8', (err, data) => {
-	if (err) return console.log(err);
-	console.log(data);
-});
+console.log(Fileread.key);
 
 // console.log(Tunnel.pageTokenKey);
 exports.Data = function (tokenkey, callback) {

@@ -10,9 +10,10 @@ var exports = (module.exports = {});
 // 	console.log('가져온 정보입니다. : ' + response[0].snippet.title); //반복문으로 돌려두면 됩니다.
 // 	NoNameFunc(response);
 // });
-//기존 sqlconnection.js script
+
 var con = mysql.createConnection({
-	host: '127.31.13.7',
+	//기존 sqlconnection.js script
+	host: 'clip-database.ct8ohl7ukbal.ap-northeast-2.rds.amazonaws.com',
 	user: 'admin',
 	password: 'qlalfqjsgh486',
 	database: 'webdrama',
