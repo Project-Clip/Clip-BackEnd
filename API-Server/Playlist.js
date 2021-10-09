@@ -2,9 +2,9 @@ var {google} = require('googleapis');
 var service = google.youtube('v3');
 var exports = (module.exports = {});
 var fs = require('fs');
-const Fileread = require('./Fileread.js');
+/*const Fileread = require('./Fileread.js');
 
-console.log(Fileread.key);
+console.log(Fileread.key);*/
 
 // console.log(Tunnel.pageTokenKey);
 exports.Data = function (tokenkey, callback) {
