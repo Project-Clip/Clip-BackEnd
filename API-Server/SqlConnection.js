@@ -10,13 +10,12 @@ var exports = (module.exports = {});
 // 	console.log('가져온 정보입니다. : ' + response[0].snippet.title); //반복문으로 돌려두면 됩니다.
 // 	NoNameFunc(response);
 // });
-
+//기존 sqlconnection.js script
 var con = mysql.createConnection({
-	//기존 sqlconnection.js script
 	host: 'clip-database.ct8ohl7ukbal.ap-northeast-2.rds.amazonaws.com',
 	user: 'admin',
 	password: 'qlalfqjsgh486',
-	database: 'webdrama',
+	database: 'Webdrama',
 	charset: 'utf8mb4',
 });
 
@@ -57,7 +56,7 @@ PlayList = (token) => {
 		while (datanum < response.length) {
 			let data = response[datanum].snippet;
 			var sql =
-				'INSERT INTO webdrama_main_episodelist(List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES(?,?,?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
+				'INSERT INTO Webdrama_Episodelist(List_id, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES(?,?,?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
 			var params = [];
 			params.push(data.title);
 			params.push(data.description);
@@ -92,7 +91,7 @@ PlayListItem = (token) => {
 		let datanum = 0;
 		while (datanum < response.length) {
 			let data = response[datanum].snippet;
-			let sql = 'INSERT INTO upload(Up_id, Up_video_id) VALUES(?,?)'; //컬럼은 따로 변경 부탁드립니다.
+			let sql = 'INSERT INTO webdrama_Upload(Up_id, Up_Channelid, Up_Videoid) VALUES(?,?)'; //컬럼은 따로 변경 부탁드립니다.
 			let params = [];
 			params.push(data.channelId);
 			params.push(data.resourceId.videoId);
@@ -119,7 +118,7 @@ Video = () => {
 		console.log('가져온 정보입니다.' + response);
 		let data = response.snippet;
 		let likecount = response.statistics;
-		let sql = 'INSERT INTO episode_video(title, description, channelId, likeCount) VALUES(?,?,?,?)';
+		let sql = 'INSERT INTO Episode_Video(Title, Description, ChannelId, Like_Count) VALUES(?,?,?,?)';
 		let params = [];
 		params.push(data.title);
 		params.push(data.description);
