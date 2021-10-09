@@ -15,7 +15,7 @@ var con = mysql.createConnection({
 	host: 'clip-database.ct8ohl7ukbal.ap-northeast-2.rds.amazonaws.com',
 	user: 'admin',
 	password: 'qlalfqjsgh486',
-	database: 'Webdrama',
+	database: 'Webdrama', // W 대문
 	charset: 'utf8mb4',
 });
 
@@ -56,7 +56,7 @@ PlayList = (token) => {
 		while (datanum < response.length) {
 			let data = response[datanum].snippet;
 			var sql =
-				'INSERT INTO Webdrama_Episodelist(List_id, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES(?,?,?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
+				'INSERT INTO Webdrama_Episodelist(List_id, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES(?,?,?,?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
 			var params = [];
 			params.push(data.title);
 			params.push(data.description);
@@ -91,7 +91,7 @@ PlayListItem = (token) => {
 		let datanum = 0;
 		while (datanum < response.length) {
 			let data = response[datanum].snippet;
-			let sql = 'INSERT INTO webdrama_Upload(Up_id, Up_Channelid, Up_Videoid) VALUES(?,?)'; //컬럼은 따로 변경 부탁드립니다.
+			let sql = 'INSERT INTO Webdrama_Upload(Up_id, Up_Channelid, Up_Videoid) VALUES(?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
 			let params = [];
 			params.push(data.channelId);
 			params.push(data.resourceId.videoId);
@@ -118,7 +118,7 @@ Video = () => {
 		console.log('가져온 정보입니다.' + response);
 		let data = response.snippet;
 		let likecount = response.statistics;
-		let sql = 'INSERT INTO Episode_Video(Title, Description, ChannelId, Like_Count) VALUES(?,?,?,?)';
+		let sql = 'INSERT INTO Episode_Video(Ep_id, Title, Description, ChannelId, Like_Count) VALUES(?,?,?,?,?)';
 		let params = [];
 		params.push(data.title);
 		params.push(data.description);
