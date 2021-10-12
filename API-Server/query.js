@@ -15,7 +15,7 @@ var con = mysql.createConnection({
 	host: 'clip-database.ct8ohl7ukbal.ap-northeast-2.rds.amazonaws.com',
 	user: 'admin',
 	password: 'qlalfqjsgh486',
-	database: 'Webdrama', // W 대문
+	database: 'Webdrama', // Webdrama 대문
 	charset: 'utf8mb4',
 });
 
@@ -49,15 +49,15 @@ PlayList = (token) => {
 	const apicode = 'playlist';
 	console.log('token입니다. ' + token);
 	Playlist.Data(token, function (response) {
-		console.log('가져온 정보입니다. : ' + response[0].snippet.title); //반복문으로 돌려두면 됩니다.
+		// console.log('가져온 정보입니다. : ' + response[0].snippet.title); //반복문으로 돌려두면 됩니다.
 
-		//Request data 등록
 		let datanum = 0;
+		//Request data 등록
 		while (datanum < response.length) {
 			let data = response[datanum].snippet;
-			var sql =
+			let sql =
 				'INSERT INTO Webdrama_Episodelist(List_id, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES(?,?,?,?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
-			var params = [];
+			let params = [];
 			params.push(data.title);
 			params.push(data.description);
 			params.push(data.publishedAt);
@@ -66,13 +66,14 @@ PlayList = (token) => {
 			params.push(data.thumbnails.high.url);
 			console.log(params);
 
-			con.query(sql, params, function (err, rows, fields) {
-				if (err) {
-					console.log(err);
-				} else {
-					console.log(rows);
-				}
-			});
+			// con.query(sql, params, function (err, rows, fields) {
+			// 	if (err) {
+			// 		console.log(err);
+			// 	} else {
+			// 		console.log(rows);
+			// 	}
+			// });
+			datanum++;
 		}
 		//조건문으로 stop 해줍시다.
 		if (response.length == 50) {

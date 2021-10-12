@@ -3,3 +3,5 @@ API-Server/APIkey.txt
 
 # test script
 API-Server/Fileread.js
+API-Server/RDSQueryDemo.js
+API-Server/fsTest.js

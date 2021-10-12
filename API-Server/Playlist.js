@@ -4,7 +4,7 @@ var exports = (module.exports = {});
 var fs = require('fs');
 /*const Fileread = require('./Fileread.js');
 
-console.log(Fileread.key);*/
+console.log('받아온 API키입니다.' + Fileread);*/
 
 // console.log(Tunnel.pageTokenKey);
 exports.Data = function (tokenkey, callback) {

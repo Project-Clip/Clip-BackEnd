@@ -1,18 +1,25 @@
 //var sql = 'INSERT INTO webdrama(Field 명들) VALUES(테이블에 넣을 값 이걸 파일로해서 넣어야하는데 문제)';
-var mysql = require('mysql');
-var Video = require('./Video.js');
+const mysql = require('mysql');
+const Video = require('./Video.js');
 
-var con = mysql.createConnection({
-	host: '127.0.0.1',
-	user: 'root',
-	password: '111111',
-	database: 'webdrama',
-	charset: 'utf8mb4',
+//Connection 정의
+//RDS에서 설정한 데이터베이스 정보
+const connection = mysql.createConnection({
+	host: 'clip-database.ct8ohl7ukbal.ap-northeast-2.rds.amazonaws.com',
+	user: 'admin',
+	password: 'qlalfqjsgh486',
+	database: 'test',
 });
 
-con.connect(function (err) {
-	if (err) throw err;
-	console.log('Connected!');
+//RDS 접속
+connection.connect(function (err) {
+	if (err) {
+		throw err;
+	} else {
+		connection.query('SELECT * FROM ', function (err, rows, fields) {
+			console.log(rows); //결과 출력
+		});
+	}
 });
 
 Video.Data(function (response) {
@@ -26,7 +33,7 @@ Video.Data(function (response) {
 	params.push(likecount.likeCount);
 	console.log(params);
 
-	con.query(sql, params, function (err, rows, fields) {
+	connection.query(sql, params, function (err, rows, fields) {
 		if (err) {
 			console.log(err);
 		} else {
