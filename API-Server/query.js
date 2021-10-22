@@ -49,8 +49,8 @@ PlayList = (token) => {
 	const apicode = 'playlist';
 	console.log('token입니다. ' + token);
 	Playlist.Data(token, function (response) {
+		//Module 사용
 		// console.log('가져온 정보입니다. : ' + response[0].snippet.title); //반복문으로 돌려두면 됩니다.
-
 		let datanum = 0;
 		//Request data 등록
 		while (datanum < response.length) {

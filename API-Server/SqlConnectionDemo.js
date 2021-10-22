@@ -16,7 +16,7 @@ connection.connect(function (err) {
 	if (err) {
 		throw err;
 	} else {
-		connection.query('SELECT * FROM ', function (err, rows, fields) {
+		connection.query('SELECT * FROM EPISODE_VIDEO', function (err, rows, fields) {
 			console.log(rows); //결과 출력
 		});
 	}
