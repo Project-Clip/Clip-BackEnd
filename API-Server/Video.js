@@ -8,7 +8,7 @@ exports.Data = function (callback) {
 			key: 'AIzaSyADYJgNuh0hvCN_07d4ZF4Snb9KficArr8', //googleAPI에서 부여받은 개인 key
 			part: 'snippet,statistics', //요청할 정보 종류
 			id: 'IVZSJnYH23Q', //영상파일의 ID
-			fields: 'items(snippet(id,title, description, channelId), statistics(likeCount))',
+			fields: 'items(snippet(title, description, channelId), statistics(likeCount))',
 			//id에서 가져올 정보(영상제목, 내용, 채널ID, 조회수, 좋아요 수)
 		},
 		function (err, response) {
