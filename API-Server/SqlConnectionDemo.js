@@ -16,7 +16,7 @@ connection.connect(function (err) {
 	if (err) {
 		throw err;
 	} else {
-		connection.query('SELECT * FROM EPISODE_VIDEO', function (err, rows, fields) {
+		connection.query('SELECT * FROM test', function (err, rows, fields) {
 			console.log(rows); //결과 출력
 		});
 	}
@@ -25,7 +25,7 @@ connection.connect(function (err) {
 Video.Data(function (response) {
 	let data = response.snippet;
 	let likecount = response.statistics;
-	var sql = 'INSERT INTO episode_video(title, description, channelId, likeCount) VALUES(?,?,?,?)';
+	var sql = 'INSERT INTO test(title, description, channelId, likeCount) VALUES(?,?,?,?)';
 	var params = [];
 	params.push(data.title);
 	params.push(data.description);
