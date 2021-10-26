@@ -1,8 +1,8 @@
 //var sql = 'INSERT INTO webdrama(Field 명들) VALUES(테이블에 넣을 값 이걸 파일로해서 넣어야하는데 문제)';
 var mysql = require('mysql');
-var Video = require('./Video.js');
-var PlaylistItem = require('./PlaylistItem.js');
-var Playlist = require('./Playlist.js');
+var Video = require('./video.js');
+var PlaylistItem = require('./playlistItem.js');
+var Playlist = require('./playlist.js');
 const {response} = require('express');
 var exports = (module.exports = {});
 
@@ -11,17 +11,27 @@ var exports = (module.exports = {});
 // 	NoNameFunc(response);
 // });
 //기존 sqlconnection.js script
-var con = mysql.createConnection({
+const connection = mysql.createConnection({
 	host: 'clip-database.ct8ohl7ukbal.ap-northeast-2.rds.amazonaws.com',
 	user: 'admin',
 	password: 'qlalfqjsgh486',
-	database: 'Webdrama', // Webdrama 대문
-	charset: 'utf8mb4',
+	database: 'Webdrama', //charset설정은 따로 불가능한지..?
 });
 
-con.connect(function (err) {
+/*connection.connect(function (err) {
 	if (err) throw err;
 	console.log('Connected!');
+});*/
+
+//RDS 접속
+connection.connect(function (err) {
+	if (err) {
+		throw err;
+	} else {
+		connection.query('SELECT * FROM Webdrama', function (err, rows, fields) {
+			console.log(rows); //결과 출력
+		});
+	}
 });
 
 NoNameFunc = (response, apicode) => {
@@ -30,8 +40,8 @@ NoNameFunc = (response, apicode) => {
 	let pagetoken = undefined;
 	if (response.length == 50) {
 		console.log('요청한 정보가 50개 이상입니다.');
-		pagetoken = 'CDIQAA';
-		console.log(apicode);
+		pagetoken = 'CGQQAA';
+		//	console.log(apicode);	//apicode확인
 		if (apicode == 'playlist') {
 			PlayList(pagetoken);
 		} else if (apicode == 'playlistitem') {
@@ -49,32 +59,37 @@ PlayList = (token) => {
 	const apicode = 'playlist';
 	console.log('token입니다. ' + token);
 	Playlist.Data(token, function (response) {
+		//response.data
 		//Module 사용
-		// console.log('가져온 정보입니다. : ' + response[0].snippet.title); //반복문으로 돌려두면 됩니다.
+
+		// console.log('토큰입니다1. : ' + JSON.stringify(response, null, 4));
+		// console.log('토큰입니다1. : ' + JSON.stringify(response[0].snippet, null, 4));
+		//console.log('가져온 정보입니다. : ' + response[9].snippet.title); //반복문으로 돌려두면 됩니다.
+		console.log('요청한 정보의 수입니다. : ' + response[0].snippet);
+		const sql =
+			'INSERT INTO Webdrama_Episodelist(List_id, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES(?,?,?,?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
+		let params = [];
 		let datanum = 0;
 		//Request data 등록
 		while (datanum < response.length) {
 			let data = response[datanum].snippet;
-			let sql =
-				'INSERT INTO Webdrama_Episodelist(List_id, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES(?,?,?,?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
-			let params = [];
 			params.push(data.title);
 			params.push(data.description);
 			params.push(data.publishedAt);
 			params.push(data.channelId);
 			params.push(data.channelTitle);
 			params.push(data.thumbnails.high.url);
-			console.log(params);
 
-			// con.query(sql, params, function (err, rows, fields) {
-			// 	if (err) {
-			// 		console.log(err);
-			// 	} else {
-			// 		console.log(rows);
-			// 	}
-			// });
 			datanum++;
 		}
+		console.log(params);
+		/*connection.query(sql, params, function (err, rows, fields) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(rows);
+			}
+		});*/
 		//조건문으로 stop 해줍시다.
 		if (response.length == 50) {
 			//조회데이터가 50개 이상일 경우
@@ -98,7 +113,7 @@ PlayListItem = (token) => {
 			params.push(data.resourceId.videoId);
 			console.log(params);
 
-			con.query(sql, params, function (err, rows, fields) {
+			connection.query(sql, params, function (err, rows, fields) {
 				if (err) {
 					console.log(err);
 				} else {
@@ -127,7 +142,7 @@ Video = () => {
 		params.push(likecount.likeCount);
 		console.log(params);
 
-		con.query(sql, params, function (err, rows, fields) {
+		connection.query(sql, params, function (err, rows, fields) {
 			if (err) {
 				console.log(err);
 			} else {

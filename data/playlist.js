@@ -6,7 +6,6 @@ var fs = require('fs');
 
 console.log('받아온 API키입니다.' + Fileread);*/
 
-// console.log(Tunnel.pageTokenKey);
 exports.Data = function (tokenkey, callback) {
 	service.playlists.list(
 		{
@@ -29,14 +28,16 @@ exports.Data = function (tokenkey, callback) {
 				// 가져온거 없을 때
 				console.log('검색 결과 없음.');
 			} else {
-				let playlistNum = 0;
-				let playlistData = []; //반환 된 정보 push할 변수
 				console.log('nextPageToken : ' + response.data.nextPageToken);
 				// console.log('총 검색결과 : ' + JSON.stringify(response.data.pageInfo, null, 4));
 				console.log('검색된 결과 : ' + playlist.length);
+
+				let playlistNum = 0;
+				let playlistData = []; //반환 된 정보 push할 변수
+				const latestId = 'PLQ0f_g2mQlLdwV7pXNJ96Yly97bYTpxMd'; //DataBase에서 가장 최신에 등록 된 ID를 Query하여 변수로 선언합니다.
+
 				while (playlistNum < playlist.length) {
-					const latestId = 'PLQ0f_g2mQlLdwV7pXNJ96Yly97bYTpxMd'; //DataBase에서 가장 최신에 등록 된 ID를 Query하여 변수로 선언합니다.
-					console.log('재생목록 id : ' + playlist[playlistNum].id);
+					// console.log('재생목록 id : ' + playlist[playlistNum].id);
 					// console.log('생성 날짜 : ' + playlistData.snippet.publishedAt);
 					// console.log('채널 id : ' + playlistData.snippet.channelId);
 					// console.log('제목 : ' + playlist[playlistNum].snippet.title);
@@ -44,17 +45,15 @@ exports.Data = function (tokenkey, callback) {
 					// console.log('썸네일 : ' + playlistData.snippet.thumbnails.high.url);
 					// console.log('채널 이름 : ' + playlistData.snippet.channelTitle);
 					// console.log(playlistData.snippet.tags);
-					if (playlist[playlistNum].id == latestId) {
+
+					/*if (playlist[playlistNum].id == latestId) {
 						//만약 현재 Api로 요청하는 정보가 Database에서 가져온 id값과 일치하는 경우, Api요청을 중지합니다.
 						break;
-					}
+					}*/
 					playlistData.push(playlist[playlistNum]);
 					playlistNum++;
-					if (playlistNum == playlist.length) {
-						//요청한 정보를 모두 가져왔을 때
-						return callback(playlistData);
-					}
 				}
+				return callback(playlist); //module로 내보낼 정보
 			}
 		},
 	);
