@@ -1,10 +1,10 @@
 //var sql = 'INSERT INTO webdrama(Field 명들) VALUES(테이블에 넣을 값 이걸 파일로해서 넣어야하는데 문제)';
-var mysql = require('mysql');
-var Video = require('./video.js');
-var PlaylistItem = require('./playlistItem.js');
-var Playlist = require('./playlist.js');
+const mysql = require('mysql');
+const Video = require('./video.js');
+const PlaylistItem = require('./playlistItem.js');
+const Playlist = require('./playlist.js');
 const {response} = require('express');
-var exports = (module.exports = {});
+const exports = (module.exports = {});
 
 // Playlist.Data(undefined, function (response) {
 // 	console.log('가져온 정보입니다. : ' + response[0].snippet.title); //반복문으로 돌려두면 됩니다.
@@ -59,30 +59,31 @@ PlayList = (token) => {
 	const apicode = 'playlist';
 	console.log('token입니다. ' + token);
 	Playlist.Data(token, function (response) {
-		//response.data
+		//response.data까지 이 이후는 items
 		//Module 사용
 
-		// console.log('토큰입니다1. : ' + JSON.stringify(response, null, 4));
-		// console.log('토큰입니다1. : ' + JSON.stringify(response[0].snippet, null, 4));
-		//console.log('가져온 정보입니다. : ' + response[9].snippet.title); //반복문으로 돌려두면 됩니다.
-		console.log('요청한 정보의 수입니다. : ' + response[0].snippet);
+		// console.log('요청한 정보입니다. : ' + response.items[0].snippet.title);
+		console.log('가져온 Token입니다 : ' + response.nextPageToken);
 		const sql =
-			'INSERT INTO Webdrama_Episodelist(List_id, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES(?,?,?,?,?,?,?)'; //컬럼은 따로 변경 부탁드립니다.
-		let params = [];
+			'INSERT INTO Webdrama_Episodelist(List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES ?;'; //컬럼은 따로 변경 부탁드립니다.
 		let datanum = 0;
+		let params = [];
 		//Request data 등록
-		while (datanum < response.length) {
-			let data = response[datanum].snippet;
-			params.push(data.title);
-			params.push(data.description);
-			params.push(data.publishedAt);
-			params.push(data.channelId);
-			params.push(data.channelTitle);
-			params.push(data.thumbnails.high.url);
+		while (datanum < response.items.length) {
+			let record = [];
+			const data = response.items[datanum].snippet;
+			record.push(data.title);
+			record.push(data.description);
+			record.push(data.publishedAt);
+			record.push(data.channelId);
+			record.push(data.channelTitle);
+			record.push(data.thumbnails.high.url);
+			params.push(record);
 
 			datanum++;
 		}
-		console.log(params);
+		console.log('주입합 배열입니다. ' + params);
+		console.log('주입 결과 : ' + JSON.stringify(params, null, 4));
 		/*connection.query(sql, params, function (err, rows, fields) {
 			if (err) {
 				console.log(err);
@@ -93,7 +94,8 @@ PlayList = (token) => {
 		//조건문으로 stop 해줍시다.
 		if (response.length == 50) {
 			//조회데이터가 50개 이상일 경우
-			NoNameFunc(response, apicode);
+			// NoNameFunc(response, apicode);
+			return;
 		}
 	});
 };
@@ -152,5 +154,6 @@ Video = () => {
 	});
 };
 
-PlayList(undefined);
-// PlayListItem(undefined);
+// const length = PlayList(undefined);
+if (PlayList(undefined) == 50) {
+}

@@ -34,6 +34,7 @@ exports.Data = function (tokenkey, callback) {
 
 				let playlistNum = 0;
 				let playlistData = []; //반환 된 정보 push할 변수
+				const test = response.data;
 				const latestId = 'PLQ0f_g2mQlLdwV7pXNJ96Yly97bYTpxMd'; //DataBase에서 가장 최신에 등록 된 ID를 Query하여 변수로 선언합니다.
 
 				while (playlistNum < playlist.length) {
@@ -53,7 +54,7 @@ exports.Data = function (tokenkey, callback) {
 					playlistData.push(playlist[playlistNum]);
 					playlistNum++;
 				}
-				return callback(playlist); //module로 내보낼 정보
+				return callback(test); //module로 내보낼 정보
 			}
 		},
 	);
