@@ -1,10 +1,10 @@
 //var sql = 'INSERT INTO webdrama(Field 명들) VALUES(테이블에 넣을 값 이걸 파일로해서 넣어야하는데 문제)';
 const mysql = require('mysql');
-const Video = require('./video.js');
-const PlaylistItem = require('./playlistItem.js');
-const Playlist = require('./playlist.js');
-const {response} = require('express');
-const exports = (module.exports = {});
+var Video = require('./video.js');
+var PlaylistItem = require('./playlistItem.js');
+var Playlist = require('./playlist.js');
+var {response} = require('express');
+// const exports = (module.exports = {});
 
 // Playlist.Data(undefined, function (response) {
 // 	console.log('가져온 정보입니다. : ' + response[0].snippet.title); //반복문으로 돌려두면 됩니다.
@@ -34,9 +34,8 @@ connection.connect(function (err) {
 	}
 });
 
-NoNameFunc = (response, apicode) => {
+/*NoNameFunc = (response, apicode) => {
 	//아직 이름을 못지어 주었습니다.. Playlist와 PlaylisItem의 정보가 50개 이상일 떄 동작하는 함수입니다.
-	console.log(response.length);
 	let pagetoken = undefined;
 	if (response.length == 50) {
 		console.log('요청한 정보가 50개 이상입니다.');
@@ -52,9 +51,9 @@ NoNameFunc = (response, apicode) => {
 		// console.log(response)
 		PlayList(pagetoken);
 	}
-};
+};*/
 
-PlayList = (token) => {
+PlayList = (token, key) => {
 	//이게 애초에 50개 이하면 어쩌려고..?
 	const apicode = 'playlist';
 	console.log('token입니다. ' + token);
@@ -64,7 +63,7 @@ PlayList = (token) => {
 
 		// console.log('요청한 정보입니다. : ' + response.items[0].snippet.title);
 		console.log('가져온 Token입니다 : ' + response.nextPageToken);
-		const sql =
+		let sql =
 			'INSERT INTO Webdrama_Episodelist(List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES ?;'; //컬럼은 따로 변경 부탁드립니다.
 		let datanum = 0;
 		let params = [];
@@ -82,9 +81,9 @@ PlayList = (token) => {
 
 			datanum++;
 		}
-		console.log('주입합 배열입니다. ' + params);
+		// console.log('주입할 배열입니다. ' + params);
 		console.log('주입 결과 : ' + JSON.stringify(params, null, 4));
-		/*connection.query(sql, params, function (err, rows, fields) {
+		/*connection.query(sql, [params], function (err, rows, fields) {
 			if (err) {
 				console.log(err);
 			} else {
@@ -92,11 +91,7 @@ PlayList = (token) => {
 			}
 		});*/
 		//조건문으로 stop 해줍시다.
-		if (response.length == 50) {
-			//조회데이터가 50개 이상일 경우
-			// NoNameFunc(response, apicode);
-			return;
-		}
+		return key(response.nextPageToken);
 	});
 };
 
@@ -154,6 +149,14 @@ Video = () => {
 	});
 };
 
-// const length = PlayList(undefined);
-if (PlayList(undefined) == 50) {
+function TokenKey(value) {
+	console.log(value);
 }
+
+// const length = PlayList(undefined);
+if (PlayList(undefined, TokenKey) == undefined) {
+	console.log(TokenKey);
+} else {
+	console.log('nextpagetoken값이 undefined가 아닙니다.');
+}
+// console.log('주입된 결과값입니다.' + PlayList());
