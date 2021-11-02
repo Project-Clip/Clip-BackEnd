@@ -28,9 +28,9 @@ exports.Data = function (tokenkey, callback) {
 				// 가져온거 없을 때
 				console.log('검색 결과 없음.');
 			} else {
-				console.log('nextPageToken : ' + response.data.nextPageToken);
+				// console.log('nextPageToken : ' + response.data.nextPageToken);
 				// console.log('총 검색결과 : ' + JSON.stringify(response.data.pageInfo, null, 4));
-				console.log('검색된 결과 : ' + playlist.length);
+				// console.log('검색된 결과 : ' + playlist.length);
 
 				let playlistNum = 0;
 				let playlistData = []; //반환 된 정보 push할 변수
@@ -38,13 +38,6 @@ exports.Data = function (tokenkey, callback) {
 				const latestId = 'PLQ0f_g2mQlLdwV7pXNJ96Yly97bYTpxMd'; //DataBase에서 가장 최신에 등록 된 ID를 Query하여 변수로 선언합니다.
 
 				while (playlistNum < playlist.length) {
-					// console.log('재생목록 id : ' + playlist[playlistNum].id);
-					// console.log('생성 날짜 : ' + playlistData.snippet.publishedAt);
-					// console.log('채널 id : ' + playlistData.snippet.channelId);
-					// console.log('제목 : ' + playlist[playlistNum].snippet.title);
-					// console.log('설명 : ' + playlistData.snippet.description);
-					// console.log('썸네일 : ' + playlistData.snippet.thumbnails.high.url);
-					// console.log('채널 이름 : ' + playlistData.snippet.channelTitle);
 					// console.log(playlistData.snippet.tags);
 
 					/*if (playlist[playlistNum].id == latestId) {
