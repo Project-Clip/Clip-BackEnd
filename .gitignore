@@ -9,3 +9,6 @@ src/playlisttest.js
 src/playlistvideo.js
 src/SqlConnectiondemo.js
 src/playlistItemVideo.js
+
+#intellij
+.idea

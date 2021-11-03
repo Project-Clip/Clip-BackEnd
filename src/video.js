@@ -7,7 +7,7 @@ exports.Data = function (callback) {
 		{
 			key: 'AIzaSyADYJgNuh0hvCN_07d4ZF4Snb9KficArr8', //googleAPI에서 부여받은 개인 key
 			part: 'snippet,statistics', //요청할 정보 종류
-			id: 'IVZSJnYH23Q', //영상파일의 ID
+			id: 'ebbqLVRMQ9k', //영상파일의 ID
 			fields: 'items(snippet(title, description, channelId), statistics(likeCount))',
 			//id에서 가져올 정보(영상제목, 내용, 채널ID, 조회수, 좋아요 수)
 		},
@@ -27,6 +27,7 @@ exports.Data = function (callback) {
 				// console.log('채널 id : ' + video[0].snippet.channelId);
 				// console.log('좋아요 수 : ' + video[0].statistics.likeCount);
 				// console.log(params);
+				console.log('반환된 영상 정보입니다.' + videoData);
 				return callback(videoData);
 			}
 		},
