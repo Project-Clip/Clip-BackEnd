@@ -1,11 +1,11 @@
 # APIKEY Text File
-data/APIkey.txt
+src/APIkey.txt
 
 # test script
-data/Fileread.js
-data/RDSQueryDemo.js
-data/fsTest.js
-data/playlisttest.js
-data/playlistItem.js
-data/playlistvideo.js
-data/SqlConnectiondemo.js
+src/Fileread.js
+src/RDSQueryDemo.js
+src/fsTest.js
+src/playlisttest.js
+src/playlistvideo.js
+src/SqlConnectiondemo.js
+src/playlistItemVideo.js
