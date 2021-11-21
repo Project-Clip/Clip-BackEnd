@@ -86,7 +86,7 @@ PlayListItem = (token, id) => {
 };
 
 //Video Module을 사용하는 함수입니다.
-Videofunction = () => {
+Videofunc = () => {
 	const apicode = 'video';
 	Video.Data(function (response) {
 		console.log('가져온 정보입니다.' + response);

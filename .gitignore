@@ -1,14 +1,14 @@
 # APIKEY Text File
-src/APIkey.txt
+routes/src/APIkey.txt
 
 # test script
-src/Fileread.js
-src/RDSQueryDemo.js
-src/fsTest.js
-src/playlisttest.js
-src/playlistvideo.js
-src/SqlConnectiondemo.js
-src/playlistItemVideo.js
+routes/src/Fileread.js
+routes/src/RDSQueryDemo.js
+routes/src/fsTest.js
+routes/src/playlisttest.js
+routes/src/playlistvideo.js
+routes/src/SqlConnectiondemo.js
+routes/src/playlistItemVideo.js
 
 #intellij
 .idea
