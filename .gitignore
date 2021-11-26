@@ -3,12 +3,15 @@ routes/src/APIkey.txt
 
 # test script
 routes/src/Fileread.js
-routes/src/RDSQueryDemo.js
+demo/RDSQueryDemo.js
 routes/src/fsTest.js
 routes/src/playlisttest.js
 routes/src/playlistvideo.js
-routes/src/SqlConnectiondemo.js
+demo/SqlConnectiondemo.js
 routes/src/playlistItemVideo.js
 
 #intellij
 .idea
+
+#dotenv
+.env

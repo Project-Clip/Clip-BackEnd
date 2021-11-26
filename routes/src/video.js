@@ -2,12 +2,12 @@ var {google} = require('googleapis');
 var service = google.youtube('v3');
 var exports = (module.exports = {});
 
-exports.Data = function (callback) {
+exports.Data = function (videoid, callback) {
 	service.videos.list(
 		{
 			key: 'AIzaSyADYJgNuh0hvCN_07d4ZF4Snb9KficArr8', //googleAPI에서 부여받은 개인 key
+			id: videoid, //영상파일의 ID
 			part: 'snippet,statistics', //요청할 정보 종류
-			id: 'ebbqLVRMQ9k', //영상파일의 ID
 			fields: 'items(snippet(title, description, channelId), statistics(likeCount))',
 			//id에서 가져올 정보(영상제목, 내용, 채널ID, 조회수, 좋아요 수)
 		},

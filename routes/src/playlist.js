@@ -28,25 +28,18 @@ exports.Data = function (tokenkey, callback) {
 				// 가져온거 없을 때
 				console.log('검색 결과 없음.');
 			} else {
-				// console.log('nextPageToken : ' + response.data.nextPageToken);
-				// console.log('총 검색결과 : ' + JSON.stringify(response.data.pageInfo, null, 4));
-				// console.log('검색된 결과 : ' + playlist.length);
-
-				let playlistNum = 0;
+				// let playlistNum = 0;
 				let playlistData = []; //반환 된 정보 push할 변수
 				const test = response.data;
-				const latestId = 'PLQ0f_g2mQlLdwV7pXNJ96Yly97bYTpxMd'; //DataBase에서 가장 최신에 등록 된 ID를 Query하여 변수로 선언합니다.
 
-				while (playlistNum < playlist.length) {
-					// console.log(playlistData.snippet.tags);
-
-					/*if (playlist[playlistNum].id == latestId) {
+				/*while (playlistNum < playlist.length) {
+					if (playlist[playlistNum].id == latestId) {
 						//만약 현재 Api로 요청하는 정보가 Database에서 가져온 id값과 일치하는 경우, Api요청을 중지합니다.
 						break;
-					}*/
+					}
 					playlistData.push(playlist[playlistNum]);
 					playlistNum++;
-				}
+				}*/
 				return callback(test); //module로 내보낼 정보
 			}
 		},
