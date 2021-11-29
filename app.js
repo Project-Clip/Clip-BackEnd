@@ -4,6 +4,7 @@ const app = express();
 const port = 3000;
 
 const index = require('./routes/index');
+require('./routes/src/playlist');
 
 // app.use(bodyParser.urlencoded({extended: true}));
 // app.use(bodyParser.json());

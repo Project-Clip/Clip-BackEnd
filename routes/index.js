@@ -6,15 +6,26 @@ const spawn = require('child_process').spawn;
 const mysqlConnection = require('../config/mysql');
 const conn = mysqlConnection.init();
 mysqlConnection.open(conn);
-const search = spawn('python', ['./src/search.py']);
+// const search = spawn('python', ['search.py']);
 
-
-const 
 //GET Method API
 router.get('/', function (req, res) {
 	console.log('현재 /를 요청중입니다.');
 	res.send('연결성공!!');
 });
+
+/*router.get('/', function (req, res) {
+	let dataToSend = 0;
+	const python = spawn('python3', ['search.py']);
+	python.stdout.on('data', function (data) {
+		console.log(data);
+		console.log(data.toString());
+		dataToSend = data.toString();
+	});
+	python.on('close', function (code) {
+		res.json(dataToSend);
+	});
+});*/
 
 router.get('/:tables', function (req, res) {
 	const table = req.params.tables;
