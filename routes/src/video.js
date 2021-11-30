@@ -1,6 +1,5 @@
-var {google} = require('googleapis');
-var service = google.youtube('v3');
-var exports = (module.exports = {});
+const {google} = require('googleapis');
+const service = google.youtube('v3');
 
 exports.Data = function (videoid, callback) {
 	service.videos.list(

@@ -1,8 +1,8 @@
 //var sql = 'INSERT INTO webdrama(Field 명들) VALUES(테이블에 넣을 값 이걸 파일로해서 넣어야하는데 문제)';
 const mysql = require('mysql');
-var Video = require('./video.js');
-var PlaylistItem = require('./playlistItem.js');
-var Playlist = require('./playlist.js');
+const Video = require('./video.js');
+const PlaylistItem = require('./playlistItem.js');
+const Playlist = require('./playlist.js');
 const async = require('async');
 // const exports = (module.exports = {});
 

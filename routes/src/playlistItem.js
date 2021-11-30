@@ -1,7 +1,5 @@
-var {google} = require('googleapis');
-var service = google.youtube('v3');
-var exports = (module.exports = {});
-// var Tunnel = require('./Tunnel.js');
+const {google} = require('googleapis');
+const service = google.youtube('v3');
 
 exports.Data = function (tokenkey, id, callback) {
 	service.playlistItems.list(

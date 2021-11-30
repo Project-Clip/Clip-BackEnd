@@ -1,10 +1,5 @@
-var {google} = require('googleapis');
-var service = google.youtube('v3');
-var exports = (module.exports = {});
-var fs = require('fs');
-/*const Fileread = require('./Fileread.js');
-
-console.log('받아온 API키입니다.' + Fileread);*/
+const {google} = require('googleapis');
+const service = google.youtube('v3');
 
 exports.Data = function (tokenkey, callback) {
 	service.playlists.list(
