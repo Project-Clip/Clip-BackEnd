@@ -1,10 +1,11 @@
 const {google} = require('googleapis');
 const service = google.youtube('v3');
+console.log(process.env.apikey);
 
 exports.Data = function (tokenkey, callback) {
 	service.playlists.list(
 		{
-			key: 'AIzaSyADYJgNuh0hvCN_07d4ZF4Snb9KficArr8', //googleAPI에서 부여받은 개인 keyz
+			key: process.env.apikey, //googleAPI에서 부여받은 개인 keyz
 			channelId: 'UCid83oPnsL-4ZEo8CyQr6Rg', //플레이리스트 오리지널의 id값
 			part: 'snippet',
 			fields: 'nextPageToken, pageInfo, items(id, snippet(title, description, publishedAt, channelId, channelTitle, tags(), thumbnails(high(url))))',

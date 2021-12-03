@@ -4,7 +4,6 @@ const Video = require('./video.js');
 const PlaylistItem = require('./playlistItem.js');
 const Playlist = require('./playlist.js');
 const async = require('async');
-// const exports = (module.exports = {});
 
 //connection mysql
 const conn = mysql.createConnection({
