@@ -1,6 +1,6 @@
 const {google} = require('googleapis');
 const service = google.youtube('v3');
-console.log('' + process.env.apikey);
+// console.log('' + process.env.apikey);
 
 exports.Data = function (tokenkey, callback) {
 	service.playlists.list(
