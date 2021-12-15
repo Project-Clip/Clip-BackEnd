@@ -15,6 +15,8 @@ require('./routes/src/video');
 
 // app.use(bodyParser.urlencoded({extended: true}));
 // app.use(bodyParser.json());
+
+//intellij 테스트 중입니다.
 app.use(express.json());
 
 app.use('/', index);
