@@ -11,5 +11,8 @@
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "sys": "^0.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.4.1"
   }
 }
