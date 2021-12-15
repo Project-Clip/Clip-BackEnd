@@ -13,6 +13,9 @@
     "sys": "^0.0.1"
   },
   "devDependencies": {
-    "eslint": "^8.4.1"
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
+    "eslint": "^8.4.1",
+    "eslint-config-google": "^0.14.0"
   }
 }
