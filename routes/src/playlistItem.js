@@ -4,7 +4,7 @@ const service = google.youtube('v3');
 exports.Data = function (tokenkey, id, callback) {
   service.playlistItems.list(
     {
-      key: 'AIzaSyADYJgNuh0hvCN_07d4ZF4Snb9KficArr8',
+      key: process.env.key,
       playlistId: id,
       part: 'snippet',
       fields:
@@ -20,22 +20,21 @@ exports.Data = function (tokenkey, id, callback) {
         return;
       }
       const playlistItem = response.data.items;
-      if (playlistItem.length == 0) {
+      if (playlistItem.length === 0) {
         // 가져온거 없을 때
         console.log('검색 결과 없음.');
       } else {
-        let playlistItemNum = 0;
-        const playlistItemData = []; //반환 된 정보 push할 변수
-        while (playlistItemNum < playlistItem.length) {
-          // const latestId = '4D3wdwyUG6s'; //DataBase에서 가장 최신에 등록 된 ID를 Query하여 변수로 선언합니다.
-          /*if (playlistItem[playlistItemNum].snippet.resourceId.videoId == latestId) {
-						break;
-					}*/
-          playlistItemData.push(playlistItem[playlistItemNum]);
-          // console.log(playlistItemData);
-          playlistItemNum++;
+        let datanum = 0;
+        const params = [];
+        // Request data 등록
+        while (datanum < playlistItem.length) {
+          const record = [];
+          const snippet = playlistItem[datanum].snippet;
+          record.push(id, snippet.channelId, snippet.resourceId.videoId);
+          params.push(record);
+          datanum++;
         }
-        return callback(playlistItemData);
+        return callback(params);
       }
     }
   );

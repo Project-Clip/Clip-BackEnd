@@ -29,10 +29,10 @@ router.get('/', function (req, res) {
 
 router.get('/:tables', function (req, res) {
   const table = req.params.tables;
-  if (table == undefined) {
+  if (table === undefined) {
     res.send('tables 입력바람');
   } else if (
-    table == 'Webdrama_Episodelist' ||
+    table === 'Webdrama_Episodelist' ||
     'Webdrama_Upload' ||
     'Episode_Video'
   ) {
