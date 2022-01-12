@@ -3,6 +3,8 @@ const express = require('express');
 const app = express();
 const port = 3001;
 const index = require('./routes/index');
+
+console.log('Clip Server 작동중 ... ');
 // const query = require('./routes/src/query');
 // const mysqlConnection = require('./config/mysql');
 // const conn = mysqlConnection.init();
@@ -10,27 +12,6 @@ const index = require('./routes/index');
 // playlisttest.Data(function (response) {
 //   console.log(response);
 // });
-
-//Playlist실행
-// const nowDate = new Date();
-// conn.query(
-//   'select channelid, date_time from Wd_channelid;',
-//   function (err, rows) {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       for (let idNum = 0; idNum < rows.length; idNum++) {
-//         const upDate = new Date(rows[idNum].date_time);
-//         if (nowDate.getDate() === upDate.getDate()) {
-//           continue;
-//         } else {
-//           const channelId = rows[idNum].channelid;
-//           query.PlayList(undefined, channelId);
-//         }
-//       }
-//     }
-//   }
-// );
 
 // PlaylistItem실행
 /*conn.query(

@@ -14,6 +14,24 @@ router.get('/', function (req, res) {
   res.send('연결성공!!');
 });
 
+//검색 기능
+router.get('/search', (req, res) => {
+  const titleName = decodeURIComponent(req.query.title);
+  console.log('받은 매개변수 : ' + JSON.stringify(titleName, null, 4));
+  const sql =
+    `SELECT * FROM Webdrama_Episodelist WHERE List_Title LIKE '%` +
+    titleName +
+    `%';`;
+  conn.query(sql, (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      console.log(JSON.stringify(rows, null, 4));
+      res.send(rows);
+    }
+  });
+});
+
 /* router.get('/', function (req, res) {
 	let dataToSend = 0;
 	const python = spawn('python3', ['search.py']);
@@ -50,7 +68,7 @@ router.get('/:tables', function (req, res) {
 });
 
 router.get('/webdrama/:id', function (req, res) {
-  if (id == undefined) {
+  if (id === undefined) {
     res.send('ID 입력바람');
   } else {
     const dramaId = req.params.id;
