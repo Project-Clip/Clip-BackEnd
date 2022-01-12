@@ -17,7 +17,6 @@ router.get('/', function (req, res) {
 //검색 기능
 router.get('/search', (req, res) => {
   const titleName = decodeURIComponent(req.query.title);
-  console.log('받은 매개변수 : ' + JSON.stringify(titleName, null, 4));
   const sql =
     `SELECT * FROM Webdrama_Episodelist WHERE List_Title LIKE '%` +
     titleName +
@@ -26,7 +25,6 @@ router.get('/search', (req, res) => {
     if (err) {
       throw err;
     } else {
-      console.log(JSON.stringify(rows, null, 4));
       res.send(rows);
     }
   });
