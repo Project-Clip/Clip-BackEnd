@@ -33,12 +33,14 @@ ChannelRequest = (callback) => {
       if (err) {
         console.log(err);
       } else {
+        // console.log('ChannelRequest : ' + JSON.stringify(rows, null, 4));
         const channelNum = []; // 변경 필요한 id 넘버
-        // console.log('현재 일입니다. : ' + nowDate.getDate());
+        console.log('현재 일입니다. : ' + nowDate.getDate());
         for (let idNum = 0; idNum < rows.length; idNum++) {
+          //채널 수만큼 반복
           hasDate = new Date(rows[idNum].date_time);
           hasDate.setHours(hasDate.getHours() + 9);
-          // console.log('마지막 업데이트 된 일입니다. : ' + hasDate.getDate());
+          console.log('마지막 업데이트 된 일입니다. : ' + hasDate.getDate());
           if (nowDate.getDate() === hasDate.getDate()) {
             //현재 시간과 업뎃 시간이 같다면?
             continue;
@@ -56,14 +58,20 @@ ChannelRequest = (callback) => {
 };
 
 ChannelUpdate = (id, callback) => {
+  // id.length만큼 반복 돌려서 따로 함수화 시키면 가능할 듯?
   console.log('업데이트가 된 채널입니다. : ' + id);
-  conn.query('UPDATE Wd_channelid SET date_time = NOW();', (err, rows) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('채널 업데이트 완료...' + JSON.stringify(rows, null, 4));
+  conn.query(
+    `UPDATE Wd_channelid SET date_time = NOW() WHERE id = 2;`,
+    (err, rows) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('채널 업데이트 완료...' + JSON.stringify(rows, null, 4));
+        const test = rows.changedRows;
+        console.log('업데이트 데이터 : ' + test);
+      }
     }
-  });
+  );
 };
 
 //동기 처리

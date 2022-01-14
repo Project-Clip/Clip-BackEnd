@@ -9,7 +9,7 @@ mysqlConnection.open(conn);
 // const search = spawn('python', ['search.py']);
 
 // GET Method API
-router.get('/', function (req, res) {
+router.get('/', (req, res) => {
   console.log('현재 /를 요청중입니다.');
   res.send('연결성공!!');
 });
@@ -25,7 +25,7 @@ router.get('/search', (req, res) => {
     if (err) {
       throw err;
     } else {
-      res.send(rows);
+      res.json(rows);
     }
   });
 });
@@ -43,7 +43,7 @@ router.get('/search', (req, res) => {
 	});
 });*/
 
-router.get('/:tables', function (req, res) {
+router.get('/:tables', (req, res) => {
   const table = req.params.tables;
   if (table === undefined) {
     res.send('tables 입력바람');
@@ -65,7 +65,7 @@ router.get('/:tables', function (req, res) {
   }
 });
 
-router.get('/webdrama/:id', function (req, res) {
+router.get('/webdrama/:id', (req, res) => {
   if (id === undefined) {
     res.send('ID 입력바람');
   } else {
@@ -82,6 +82,11 @@ router.get('/webdrama/:id', function (req, res) {
       }
     );
   }
+});
+
+router.get('/popular/list', (req, res) => {
+  //여기서 데이터 가공하시면 됩니다.
+  res.json('할로!!!');
 });
 
 module.exports = router;
