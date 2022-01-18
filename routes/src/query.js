@@ -1,19 +1,21 @@
 // var sql = 'INSERT INTO webdrama(Field 명들) VALUES(테이블에 넣을 값 이걸 파일로해서 넣어야하는데 문제)';
 require('dotenv').config();
 const async = require('async');
-const mysql = require('mysql');
 const Video = require('./video.js');
 const PlaylistItem = require('./playlistItem.js');
 const Playlist = require('./playlist.js');
+const path = require('path');
 
 // connection mysql
 //main Server
-const conn = mysql.createConnection({
-  host: 'clip-database.ct8ohl7ukbal.ap-northeast-2.rds.amazonaws.com',
-  user: 'admin',
-  password: 'qlalfqjsgh486',
-  database: 'test', // charset설정은 따로 불가능한지..?
-});
+const mysqlConnection = require(path.join(
+  __dirname,
+  '..',
+  '..',
+  'config/mysql.js'
+));
+const conn = mysqlConnection.init();
+mysqlConnection.open(conn);
 //Test Server
 /*const conn = mysql.createConnection({
   host: 'rdstest.ckc6oubthmz8.ap-northeast-2.rds.amazonaws.com',
@@ -23,63 +25,80 @@ const conn = mysql.createConnection({
 });*/
 
 //채널 단위 업데이트
-ChannelRequest = (callback) => {
+ChannelUpdate = (callback) => {
   const nowDate = new Date();
   let hasDate;
   conn.query(
-    //Wd_channelid에서 채널id 추출
-    'select id, channelid, date_time from Wd_channelid;',
+    'select id, channelid, List_Lastupdate from Wd_channelid;',
     function (err, rows) {
       if (err) {
         console.log(err);
       } else {
-        // console.log('ChannelRequest : ' + JSON.stringify(rows, null, 4));
-        const channelNum = []; // 변경 필요한 id 넘버
-        console.log('현재 일입니다. : ' + nowDate.getDate());
+        console.log('(ChannleUpdate)현재 일입니다. : ' + nowDate.getDate());
         for (let idNum = 0; idNum < rows.length; idNum++) {
-          //채널 수만큼 반복
-          hasDate = new Date(rows[idNum].date_time);
+          const channelId = rows[idNum].channelid;
+          hasDate = new Date(rows[idNum].List_Lastupdate);
           hasDate.setHours(hasDate.getHours() + 9);
-          console.log('마지막 업데이트 된 일입니다. : ' + hasDate.getDate());
+          // hasDate.setHours(hasDate.getHours() - 24); //test code
+          console.log(
+            channelId +
+              '의 (ChannleUpdate)마지막 업데이트 된 일입니다. : ' +
+              hasDate.getDate()
+          );
           if (nowDate.getDate() === hasDate.getDate()) {
-            //현재 시간과 업뎃 시간이 같다면?
+            //현재 시간과 업뎃 시간이 같다면
             continue;
           } else {
-            const channelId = rows[idNum].channelid;
-            const uniqueId = rows[idNum].id;
-            channelNum.push(uniqueId);
             PlayList(undefined, channelId);
+            UpdateTime('Wd_channelid', 'channelid', channelId);
           }
         }
-        return callback(null, channelNum);
+        return callback(null, nowDate);
       }
     }
   );
 };
 
-ChannelUpdate = (id, callback) => {
-  // id.length만큼 반복 돌려서 따로 함수화 시키면 가능할 듯?
-  console.log('업데이트가 된 채널입니다. : ' + id);
+//웹드라마 업데이트
+DramaUpdate = (nowDate, callback) => {
+  let hasDate;
   conn.query(
-    `UPDATE Wd_channelid SET date_time = NOW() WHERE id = 2;`,
-    (err, rows) => {
+    'select List_Playlistid, List_Lastupdate from Webdrama_Episodelist;',
+    function (err, rows) {
       if (err) {
         console.log(err);
       } else {
-        console.log('채널 업데이트 완료...' + JSON.stringify(rows, null, 4));
-        const test = rows.changedRows;
-        console.log('업데이트 데이터 : ' + test);
+        console.log('(DramaUpdate)현재 일입니다. : ' + nowDate.getDate());
+        for (let idNum = 0; idNum < rows.length; idNum++) {
+          const dramaId = rows[idNum].List_Playlistid;
+          hasDate = new Date(rows[idNum].List_Lastupdate);
+          hasDate.setHours(hasDate.getHours() + 9);
+          // hasDate.setHours(hasDate.getHours() - 24); //test code
+          console.log(
+            dramaId +
+              '의 (DramaUpdate)마지막 업데이트 된 일입니다. : ' +
+              hasDate.getDate()
+          );
+          if (nowDate.getDate() === hasDate.getDate()) {
+            //현재 시간과 업뎃 시간이 같다면?
+            continue;
+          } else {
+            PlayListItem(undefined, dramaId);
+            UpdateTime('Webdrama_Episodelist', 'List_Playlistid', dramaId);
+          }
+        }
+        return callback(null, nowDate);
       }
     }
   );
 };
 
 //동기 처리
-async.waterfall([ChannelRequest, ChannelUpdate], (err, result) => {
-  if (err === null) {
-    console.log('스케쥴러 완료');
-  } else {
+async.waterfall([ChannelUpdate, DramaUpdate], (err, result) => {
+  if (err) {
     console.log('에러입니다 : ' + err);
+  } else {
+    console.log('스케쥴러 완료');
   }
 });
 
@@ -127,4 +146,20 @@ Videofunc = (id) => {
       }
     });
   });
+};
+
+UpdateTime = (tableName, column, id) => {
+  conn.query(
+    `UPDATE ${tableName} SET List_Lastupdate = NOW() WHERE ${column} = '${id}';`,
+    `UPDATE ${tableName} SET List_Lastupdate = NOW() WHERE ${column} = '${id}';`,
+    (err, rows) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('채널 업데이트 완료...' + JSON.stringify(rows, null, 4));
+        const test = rows.changedRows;
+        console.log('(UpdateTime)업데이트 데이터 수 : ' + test);
+      }
+    }
+  );
 };

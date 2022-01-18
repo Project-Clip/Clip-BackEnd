@@ -25,10 +25,9 @@ exports.Data = function (tokenkey, channelid, callback) {
         // 가져온거 없을 때
         console.log('검색 결과 없음.');
       } else {
-        let datanum = 0;
-        const params = [];
         // Request data 등록
-        while (datanum < playlist.length) {
+        const params = [];
+        for (let datanum = 0; datanum < playlist.length; datanum++) {
           const record = [];
           const data = playlist[datanum];
           const snippet = playlist[datanum].snippet;
@@ -42,7 +41,6 @@ exports.Data = function (tokenkey, channelid, callback) {
             snippet.thumbnails.high.url
           );
           params.push(record);
-          datanum++;
         }
         return callback(params); // module로 내보낼 정보
       }

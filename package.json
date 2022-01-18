@@ -10,6 +10,7 @@
     "googleapis": "^85.0.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "path": "^0.12.7",
     "sys": "^0.0.1"
   },
   "devDependencies": {
