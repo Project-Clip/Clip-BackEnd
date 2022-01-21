@@ -8,6 +8,17 @@ const conn = mysqlConnection.init();
 mysqlConnection.open(conn);
 // const search = spawn('python', ['search.py']);
 
+//함수
+GetQuery = (sql) => {
+  conn.query(sql, (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      return rows;
+    }
+  });
+};
+
 // GET Method API
 router.get('/', (req, res) => {
   console.log('현재 /를 요청중입니다.');
@@ -15,8 +26,8 @@ router.get('/', (req, res) => {
 });
 
 //검색 기능
-router.get('/search', (req, res) => {
-  const titleName = decodeURIComponent(req.query.title);
+router.get('/search/dramatitle', (req, res) => {
+  const titleName = decodeURIComponent(req.query.List_Title);
   const sql =
     `SELECT * FROM Webdrama_Episodelist WHERE List_Title LIKE '%` +
     titleName +
@@ -25,9 +36,49 @@ router.get('/search', (req, res) => {
     if (err) {
       throw err;
     } else {
-      res.json(rows);
+      res.status(201).json(rows);
     }
   });
+});
+
+//조회수 카운트
+router.put('/plusview', (req, res) => {
+  const titleName = decodeURIComponent(req.query.List_Title);
+  const sql =
+    `UPDATE Webdrama_Episodelist SET Viewcount = Viewcount + 1 WHERE List_Title LIKE '%` +
+    titleName +
+    `%';`;
+  conn.query(sql, (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      res.status(204).json(rows);
+    }
+  });
+});
+
+//역대 인기 조회 수 작품
+router.get('/popular/list', (req, res) => {
+  //여기서 데이터 가공하시면 됩니다.
+  const sql = `SELECT List_Playlistid,List_Title,List_Thumnails FROM Webdrama_Episodelist;`;
+  conn.query(sql, (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      const popularList = rows;
+      popularList.sort(function (a, b) {
+        return a.Viewcount - b.Viewcount;
+      });
+      popularList.reverse();
+      res.status(206);
+    }
+  });
+});
+
+//주간 인기 조회 수 작품
+router.get('/popular/weekend/list', (req, res) => {
+  //여기서 데이터 가공하시면 됩니다.
+  res.json('할로!!!');
 });
 
 /* router.get('/', function (req, res) {
@@ -52,7 +103,8 @@ router.get('/:tables', (req, res) => {
     'Webdrama_Upload' ||
     'Episode_Video'
   ) {
-    conn.query('SELECT * FROM ' + table + ';', function (err, rows, fields) {
+    const sql = 'SELECT * FROM ' + table + ';';
+    conn.query(sql, function (err, rows, fields) {
       if (err) {
         throw err;
       } else {
@@ -70,23 +122,17 @@ router.get('/webdrama/:id', (req, res) => {
     res.send('ID 입력바람');
   } else {
     const dramaId = req.params.id;
-    conn.query(
-      'SELECT * FROM Webdrama_Episodelist WHERE List_id =' + dramaId + ';',
-      function (err, rows, fields) {
-        if (err) {
-          throw err;
-        } else {
-          console.log('GET Method 정상작동.' + JSON.stringify(rows, null, 4));
-          res.render(rows);
-        }
+    const sql =
+      'SELECT * FROM Webdrama_Episodelist WHERE List_id =' + dramaId + ';';
+    conn.query(sql, function (err, rows, fields) {
+      if (err) {
+        throw err;
+      } else {
+        console.log('GET Method 정상작동.' + JSON.stringify(rows, null, 4));
+        res.render(rows);
       }
-    );
+    });
   }
-});
-
-router.get('/popular/list', (req, res) => {
-  //여기서 데이터 가공하시면 됩니다.
-  res.json('할로!!!');
 });
 
 module.exports = router;

@@ -151,7 +151,6 @@ Videofunc = (id) => {
 UpdateTime = (tableName, column, id) => {
   conn.query(
     `UPDATE ${tableName} SET List_Lastupdate = NOW() WHERE ${column} = '${id}';`,
-    `UPDATE ${tableName} SET List_Lastupdate = NOW() WHERE ${column} = '${id}';`,
     (err, rows) => {
       if (err) {
         console.log(err);
