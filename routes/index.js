@@ -52,7 +52,7 @@ router.put('/plusview', (req, res) => {
     if (err) {
       throw err;
     } else {
-      res.status(204).json(rows);
+      res.status(204);
     }
   });
 });
@@ -70,7 +70,7 @@ router.get('/popular/list', (req, res) => {
         return a.Viewcount - b.Viewcount;
       });
       popularList.reverse();
-      res.status(206);
+      res.status(206).json(popularList);
     }
   });
 });
