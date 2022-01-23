@@ -78,7 +78,45 @@ router.get('/popular/list', (req, res) => {
 //주간 인기 조회 수 작품
 router.get('/popular/weekend/list', (req, res) => {
   //여기서 데이터 가공하시면 됩니다.
-  res.json('할로!!!');
+  //res.json('할로!!!');
+  router.get('/popular/list', (req, res) => {
+  
+    Date.prototype.getWeek = function(start)
+    {
+        // 현재 주차의 시작일 (월) 종료일 (일)
+        start = start || 0;
+        var today = new Date(this.setHours(0, 0, 0, 0));
+        var day = today.getDay() - start;
+        var date = today.getDate() - day;
+     
+          
+        var StartDate = new Date(today.setDate(date + 1)); // toDay + 1
+        var EndDate = new Date(today.setDate(date + 7)); // toDay + 7
+        
+        return [StartDate, EndDate];
+    }
+     
+    // test code
+    var Dates = new Date().getWeek();
+    alert(Dates[0].toLocaleDateString() + ' to '+ Dates[1].toLocaleDateString());
+  
+    //  const videocnt = req.params.id;
+    // conn.query(
+    //   'SELECT * FROM Webdrama_Episodelist WHERE Viewcountweek =' + videocnt + ';',
+    //   function (err, rows, fields){
+    //     if(err) {
+    //       throw err;
+    //     } else {
+          
+    //     }
+    //   },
+    //   function week(){
+    //     var d = new Date();
+    //     var dayOf
+    //   }
+    // )
+    
+  });
 });
 
 /* router.get('/', function (req, res) {
