@@ -16,13 +16,6 @@ const mysqlConnection = require(path.join(
 ));
 const conn = mysqlConnection.init();
 mysqlConnection.open(conn);
-//Test Server
-/*const conn = mysql.createConnection({
-  host: 'rdstest.ckc6oubthmz8.ap-northeast-2.rds.amazonaws.com',
-  user: 'admin',
-  password: '2dbstn0309',
-  database: 'clip', //charset설정은 따로 불가능한지..?
-});*/
 
 //채널 단위 업데이트
 ChannelUpdate = (callback) => {
@@ -93,14 +86,55 @@ DramaUpdate = (nowDate, callback) => {
   );
 };
 
+//드라마 목록 업데이트
+DramaListUpdate = (nowDate, callback) => {
+  const dateNow = nowDate.getDate();
+  const hourNow = nowDate.getHours();
+  let hasDate;
+  conn.query(
+    'select Up_Playlistid, Up_Videoid, List_Lastupdate from Webdrama_Upload;',
+    function (err, rows) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('(DramaListUpdate)현재 일입니다. : ' + nowDate.getDate());
+        for (let idNum = 0; idNum < rows.length; idNum++) {
+          const videoId = rows[idNum].Up_Videoid;
+          hasDate = new Date(rows[idNum].List_Lastupdate);
+          hasDate.setHours(hasDate.getHours() + 9);
+          // hasDate.setHours(hasDate.getHours() - 24); //test code
+          console.log(
+            videoId +
+              '의 (DramaListUpdate)마지막 업데이트 된 일입니다. : ' +
+              hasDate.getDate()
+          );
+          if (
+            nowDate.getDate() === hasDate.getDate() &&
+            nowDate.getHours() === hasDate.getHours()
+          ) {
+            //현재 날짜와 시간과 업뎃 날짜와 시간이 같다면
+            Videofunc(videoId);
+          } else {
+            continue;
+          }
+        }
+        return callback(null);
+      }
+    }
+  );
+};
+
 //동기 처리
-async.waterfall([ChannelUpdate, DramaUpdate], (err, result) => {
-  if (err) {
-    console.log('에러입니다 : ' + err);
-  } else {
-    console.log('스케쥴러 완료');
+async.waterfall(
+  [ChannelUpdate, DramaUpdate, DramaListUpdate],
+  (err, result) => {
+    if (err) {
+      console.log('에러입니다 : ' + err);
+    } else {
+      console.log('스케쥴러 완료');
+    }
   }
-});
+);
 
 // playlist Module을 사용하는 함수입니다.
 PlayList = (token, id) => {
@@ -131,6 +165,17 @@ PlayListItem = (token, id) => {
       }
     });
   });
+  conn.query(
+    `UPDATE Webdrama_Upload
+     SET test = if(List_Lastupdate = NOW(), 'flase', 'true');`,
+    function (err, rows) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(rows);
+      }
+    }
+  );
 };
 
 // Video Module을 사용하는 함수입니다.
@@ -150,14 +195,38 @@ Videofunc = (id) => {
 
 UpdateTime = (tableName, column, id) => {
   conn.query(
-    `UPDATE ${tableName} SET List_Lastupdate = NOW() WHERE ${column} = '${id}';`,
+    `UPDATE ${tableName}
+     SET List_Lastupdate = NOW()
+     WHERE ${column} = '${id}';`,
     (err, rows) => {
       if (err) {
         console.log(err);
       } else {
-        console.log('채널 업데이트 완료...' + JSON.stringify(rows, null, 4));
+        console.log(
+          '(UpdateTime) 채널 업데이트 완료...' + JSON.stringify(rows, null, 4)
+        );
         const test = rows.changedRows;
         console.log('(UpdateTime)업데이트 데이터 수 : ' + test);
+      }
+    }
+  );
+};
+
+//test code
+TestUpdateTime = (tableName) => {
+  conn.query(
+    `UPDATE ${tableName}
+     SET test = if(List_Lastupdate = NOW(), 'flase', 'true');`,
+    (err, rows) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(
+          '(TestUpdateTime) 채널 업데이트 완료...' +
+            JSON.stringify(rows, null, 4)
+        );
+        const test = rows.changedRows;
+        console.log('(TestUpdateTime)업데이트 데이터 수 : ' + test);
       }
     }
   );

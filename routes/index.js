@@ -45,14 +45,14 @@ router.get('/search/dramatitle', (req, res) => {
 router.put('/plusview', (req, res) => {
   const titleName = decodeURIComponent(req.query.List_Title);
   const sql =
-    `UPDATE Webdrama_Episodelist SET Viewcount = Viewcount + 1 WHERE List_Title LIKE '%` +
+    `UPDATE Webdrama_Episodelist SET Viewcount = Viewcount + 1, Viewcountweek = Viewcountweek + 1 WHERE List_Title LIKE '%` +
     titleName +
     `%';`;
   conn.query(sql, (err, rows) => {
     if (err) {
       throw err;
     } else {
-      res.status(204);
+      res.status(204).json(rows);
     }
   });
 });
@@ -80,26 +80,25 @@ router.get('/popular/weekend/list', (req, res) => {
   //여기서 데이터 가공하시면 됩니다.
   //res.json('할로!!!');
   router.get('/popular/list', (req, res) => {
-  
-    Date.prototype.getWeek = function(start)
-    {
-        // 현재 주차의 시작일 (월) 종료일 (일)
-        start = start || 0;
-        var today = new Date(this.setHours(0, 0, 0, 0));
-        var day = today.getDay() - start;
-        var date = today.getDate() - day;
-     
-          
-        var StartDate = new Date(today.setDate(date + 1)); // toDay + 1
-        var EndDate = new Date(today.setDate(date + 7)); // toDay + 7
-        
-        return [StartDate, EndDate];
-    }
-     
+    Date.prototype.getWeek = function (start) {
+      // 현재 주차의 시작일 (월) 종료일 (일)
+      start = start || 0;
+      var today = new Date(this.setHours(0, 0, 0, 0));
+      var day = today.getDay() - start;
+      var date = today.getDate() - day;
+
+      var StartDate = new Date(today.setDate(date + 1)); // toDay + 1
+      var EndDate = new Date(today.setDate(date + 7)); // toDay + 7
+
+      return [StartDate, EndDate];
+    };
+
     // test code
     var Dates = new Date().getWeek();
-    alert(Dates[0].toLocaleDateString() + ' to '+ Dates[1].toLocaleDateString());
-  
+    alert(
+      Dates[0].toLocaleDateString() + ' to ' + Dates[1].toLocaleDateString()
+    );
+
     //  const videocnt = req.params.id;
     // conn.query(
     //   'SELECT * FROM Webdrama_Episodelist WHERE Viewcountweek =' + videocnt + ';',
@@ -107,7 +106,7 @@ router.get('/popular/weekend/list', (req, res) => {
     //     if(err) {
     //       throw err;
     //     } else {
-          
+
     //     }
     //   },
     //   function week(){
@@ -115,7 +114,6 @@ router.get('/popular/weekend/list', (req, res) => {
     //     var dayOf
     //   }
     // )
-    
   });
 });
 
