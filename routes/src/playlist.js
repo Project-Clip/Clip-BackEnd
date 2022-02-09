@@ -17,7 +17,7 @@ exports.Data = function (tokenkey, channelid, callback) {
     function (err, response) {
       if (err) {
         // 에러 났을 때
-        console.log('The API returned an error : ' + err);
+        console.log('(Playlist.js) The API returned an error : ' + err);
         return;
       }
       const playlist = response.data.items;

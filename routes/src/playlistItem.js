@@ -16,7 +16,7 @@ exports.Data = function (tokenkey, id, callback) {
       // console.log('매개변수 작동 점검중입니다 : ' + playlistid);
       if (err) {
         //에러 났을 때
-        console.log('The API returned an error:' + err);
+        console.log('(PlaylistItem.js) The API returned an error:' + err);
         return;
       }
       const playlistItem = response.data.items;

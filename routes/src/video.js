@@ -14,7 +14,7 @@ exports.Data = function (videoid, callback) {
     function (err, response) {
       if (err) {
         // 문제 있을 때
-        console.log('The API returned an error:' + err);
+        console.log('(Video.js) The API returned an error:' + err);
         return;
       }
       const video = response.data.items; // 반환 된 정보 변수로 지정
