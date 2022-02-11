@@ -43,11 +43,32 @@ ChannelUpdate = (callback) => {
               '의 (ChannleUpdate)마지막 업데이트 된 일입니다. : ' +
               hasDate.getDate()
           );
-          if (nowDate.getDate() === hasDate.getDate()) {
+          if (
+            nowDate.getFullYear() === hasDate.getFullYear() &&
+            nowDate.getMonth() === hasDate.getMonth() &&
+            nowDate.getDate() === hasDate.getDate() &&
+            nowDate.getHours() === hasDate.getHours() &&
+            //테스트 종료시 삭제 부탁드립니다.
+            nowDate.getMinutes() === hasDate.getMinutes()
+          ) {
             //현재 시간과 업뎃 시간이 같다면
             continue;
           } else {
-            PlayList(undefined, channelId);
+            async.waterfall(
+              [
+                function (callback) {
+                  callback(null, undefined, channelId);
+                },
+                PlayList,
+              ],
+              function (err, result) {
+                if (err) {
+                  console.log('에러입니다 : ' + err);
+                } else {
+                  console.log('Playlist 완료...');
+                }
+              }
+            );
             UpdateTime('Wd_channelid', 'channelid', channelId);
           }
         }
@@ -78,6 +99,8 @@ DramaUpdate = (nowDate, callback) => {
               hasDate.getDate()
           );
           if (
+            nowDate.getFullYear() === hasDate.getFullYear() &&
+            nowDate.getMonth() === hasDate.getMonth() &&
             nowDate.getDate() === hasDate.getDate() &&
             nowDate.getHours() === hasDate.getHours() &&
             nowDate.getMinutes() === hasDate.getMinutes()
@@ -123,7 +146,6 @@ DramaListUpdate = (nowDate, callback) => {
         console.log('(DramaListUpdate)현재 일입니다. : ' + nowDate.getDate());
         for (let idNum = 0; idNum < rows.length; idNum++) {
           const videoId = rows[idNum].Up_Videoid;
-          const dramaId = rows[idNum].Up_Playlistid;
           hasDate = new Date(rows[idNum].List_Lastupdate);
           hasDate.setHours(hasDate.getHours() + 9);
           // hasDate.setHours(hasDate.getHours() - 24); //test code
@@ -138,9 +160,6 @@ DramaListUpdate = (nowDate, callback) => {
           ) {
             //현재 날짜와 시간과 업뎃 날짜와 시간이 같다면
             Videofunc(videoId);
-            UpdateTime('Webdrama_Episodelist', 'List_Playlistid', dramaId);
-            if (nowDate.getMinutes() === hasDate.getMinutes()) {
-            }
           } else {
             continue;
           }
@@ -156,42 +175,20 @@ DramaListUpdate = (nowDate, callback) => {
 ////////////////////////////
 
 UpdateTime = (tableName, column, id) => {
-  conn.query(
-    `UPDATE ${tableName}
+  const sql = `UPDATE ${tableName}
      SET List_Lastupdate = NOW()
-     WHERE ${column} = '${id}';`,
-    (err, rows) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(
-          '(UpdateTime) 채널 업데이트 완료...' + JSON.stringify(rows, null, 4)
-        );
-        const test = rows.changedRows;
-        console.log('(UpdateTime)업데이트 데이터 수 : ' + test);
-      }
+     WHERE ${column} = '${id}';`;
+  conn.query(sql, (err, rows) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(
+        '(UpdateTime) 채널 업데이트 완료...' + JSON.stringify(rows, null, 4)
+      );
+      const test = rows.changedRows;
+      console.log('(UpdateTime)업데이트 데이터 수 : ' + test);
     }
-  );
-};
-
-//test code
-TestUpdateTime = (tableName) => {
-  conn.query(
-    `UPDATE ${tableName}
-     SET test = if(List_Lastupdate = NOW(), 'flase', 'true');`,
-    (err, rows) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(
-          '(TestUpdateTime) 채널 업데이트 완료...' +
-            JSON.stringify(rows, null, 4)
-        );
-        const test = rows.changedRows;
-        console.log('(TestUpdateTime)업데이트 데이터 수 : ' + test);
-      }
-    }
-  );
+  });
 };
 
 ////////////////////////////
@@ -199,7 +196,7 @@ TestUpdateTime = (tableName) => {
 ////////////////////////////
 
 // playlist Module을 사용하는 함수입니다.
-PlayList = (token, id) => {
+PlayList = (token, id, callback) => {
   Playlist.Data(token, id, (response) => {
     // console.log('PlayList : ' + JSON.stringify(response, null, 4));
     const sql =
@@ -212,6 +209,7 @@ PlayList = (token, id) => {
       }
     });
   });
+  return callback(null);
 };
 
 // playlistItem Module을 사용하는 함수입니다.
@@ -224,6 +222,14 @@ PlayListItem = (token, id, callback) => {
         console.log(err);
       } else {
         console.log('PlaylistItem API에서 ' + id + ' 데이터 요청완료...');
+        console.log(
+          'PlaylistItem에서 요청한 데이터 : ' +
+            JSON.stringify(rows.affectedRows, 4, null)
+        );
+        if (rows.affectedRows > 0) {
+          //insert data가 최종적으로 1개이상이면...
+          UpdateTime('Webdrama_Episodelist', 'List_Playlistid', id);
+        }
       }
     });
   });
@@ -248,7 +254,7 @@ Videofunc = (id) => {
 ////////////////////////////
 //스케쥴러
 ////////////////////////////
-schedule.scheduleJob('0 * * * * *', function () {
+/*schedule.scheduleJob('0 * * * * *', function () {
   async.waterfall(
     [ChannelUpdate, DramaUpdate, DramaListUpdate],
     (err, result) => {
@@ -259,4 +265,18 @@ schedule.scheduleJob('0 * * * * *', function () {
       }
     }
   );
-});
+});*/
+
+////////////////////////////
+//test스케쥴러
+////////////////////////////
+async.waterfall(
+  [ChannelUpdate, DramaUpdate, DramaListUpdate],
+  (err, result) => {
+    if (err) {
+      console.log('에러입니다 : ' + err);
+    } else {
+      console.log('스케쥴러 완료');
+    }
+  }
+);
