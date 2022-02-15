@@ -193,22 +193,27 @@ UpdateTime = (tableName, column, id) => {
 
 ////////////////////////////
 //youtubeAPI요청 관련 함수
+/*생각해보니까 애들이 콜백 처리 되어있는데 함수로 묶어야만 반복처리가 가능하다고 생각한 내가 참 멍청함
+ * 차라리 async쓸 때 조건문에서 새로운 배열에 data를 push하고 그 data를 넘겨주면서 해당 함수 내에서 반복으로 본아가게 만들면
+ * 내가 고민했던 요소와 문제를 한번에 처리가 가능해짐 당장내일부터 개선할 예정*/
 ////////////////////////////
 
 // playlist Module을 사용하는 함수입니다.
 PlayList = (token, id, callback) => {
-  Playlist.Data(token, id, (response) => {
-    // console.log('PlayList : ' + JSON.stringify(response, null, 4));
-    const sql =
-      'INSERT IGNORE INTO Webdrama_Episodelist(List_Playlistid, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES ?;'; // 컬럼은 따로 변경 부탁드립니다.
-    conn.query(sql, [response], (err, rows, fields) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Playlist API에서 ' + id + ' 데이터 요청완료...');
-      }
+  for (let a = 0; a < 2; a++) {
+    Playlist.Data(token, id, (response) => {
+      // console.log('PlayList : ' + JSON.stringify(response, null, 4));
+      const sql =
+        'INSERT IGNORE INTO Webdrama_Episodelist(List_Playlistid, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES ?;'; // 컬럼은 따로 변경 부탁드립니다.
+      conn.query(sql, [response], (err, rows, fields) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Playlist API에서 ' + id + ' 데이터 요청완료...');
+        }
+      });
     });
-  });
+  }
   return callback(null);
 };
 

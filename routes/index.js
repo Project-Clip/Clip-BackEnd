@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-// const { spawn } = require('child_process').spawn;
 
 // mysql connection
 const mysqlConnection = require('../config/mysql');
+// const async = require('async');
 const conn = mysqlConnection.init();
 mysqlConnection.open(conn);
-// const search = spawn('python', ['search.py']);
 
 //함수
 GetQuery = (sql) => {
@@ -58,7 +57,7 @@ router.put('/plusview', (req, res) => {
 });
 
 //역대 인기 조회 수 작품
-router.get('/popular/list', (req, res) => {
+router.get('/popular/dramalist', (req, res) => {
   //여기서 데이터 가공하시면 됩니다.
   const sql = `SELECT List_Playlistid,List_Title,List_Thumnails FROM Webdrama_Episodelist;`;
   conn.query(sql, (err, rows) => {
@@ -76,60 +75,52 @@ router.get('/popular/list', (req, res) => {
 });
 
 //주간 인기 조회 수 작품
-router.get('/popular/weekend/list', (req, res) => {
-  //여기서 데이터 가공하시면 됩니다.
-  //res.json('할로!!!');
-  router.get('/popular/list', (req, res) => {
-    Date.prototype.getWeek = function (start) {
-      // 현재 주차의 시작일 (월) 종료일 (일)
-      start = start || 0;
-      var today = new Date(this.setHours(0, 0, 0, 0));
-      var day = today.getDay() - start;
-      var date = today.getDate() - day;
+// router.get('/popular/weekend/list', (req, res) => {
+//   Date.prototype.getWeek = function (start) {
+//     // 현재 주차의 시작일 (월) 종료일 (일)
+//     start = start || 0;
+//     const today = new Date(this.setHours(0, 0, 0, 0));
+//     const day = today.getDay() - start;
+//     const date = today.getDate() - day;
+//
+//     const StartDate = new Date(today.setDate(date + 1)); // toDay + 1
+//     const EndDate = new Date(today.setDate(date + 7)); // toDay + 7
+//
+//     return [StartDate, EndDate];
+//   };
+// });
 
-      var StartDate = new Date(today.setDate(date + 1)); // toDay + 1
-      var EndDate = new Date(today.setDate(date + 7)); // toDay + 7
-
-      return [StartDate, EndDate];
-    };
-
-    // test code
-    var Dates = new Date().getWeek();
-    alert(
-      Dates[0].toLocaleDateString() + ' to ' + Dates[1].toLocaleDateString()
-    );
-
-    //  const videocnt = req.params.id;
-    // conn.query(
-    //   'SELECT * FROM Webdrama_Episodelist WHERE Viewcountweek =' + videocnt + ';',
-    //   function (err, rows, fields){
-    //     if(err) {
-    //       throw err;
-    //     } else {
-
-    //     }
-    //   },
-    //   function week(){
-    //     var d = new Date();
-    //     var dayOf
-    //   }
-    // )
+router.get('/today/dramalist', (req, res) => {
+  const nowDate = new Date();
+  let hasDate;
+  const sql =
+    'select List_Playlistid, List_Lastupdate from Webdrama_Episodelist;';
+  conn.query(sql, (err, rows) => {
+    if (err) {
+      console.log(err);
+    } else {
+      for (let idNum = 0; idNum < rows.length; idNum++) {
+        const dramaId = rows[idNum].List_Playlistid; //List_Playlistid
+        hasDate = new Date(rows[idNum].List_Lastupdate);
+        hasDate.setHours(hasDate.getHours() + 9);
+        // hasDate.setHours(hasDate.getHours() - 24); //test code);
+        if (
+          nowDate.getFullYear() === hasDate.getFullYear() &&
+          nowDate.getMonth() === hasDate.getMonth() &&
+          nowDate.getDate() === hasDate.getDate()
+        ) {
+          //현재 시간과 업뎃 시간이 같다면?
+          continue;
+        } else {
+          /*여기서 고민인 것이 배열을 하나 만들어서 조건에 맞는 data push후, json으로 전송을 할 것인지,
+           * 아니면 rows에서 splice해서 json으로 전송할 것인지 고민중. 앵간해서는 후자로 하고 싶음.*/
+        }
+      }
+    }
   });
 });
 
-/* router.get('/', function (req, res) {
-	let dataToSend = 0;
-	const python = spawn('python3', ['search.py']);
-	python.stdout.on('data', function (data) {
-		console.log(data);
-		console.log(data.toString());
-		dataToSend = data.toString();
-	});
-	python.on('close', function (code) {
-		res.json(dataToSend);
-	});
-});*/
-
+//test API
 router.get('/:tables', (req, res) => {
   const table = req.params.tables;
   if (table === undefined) {
