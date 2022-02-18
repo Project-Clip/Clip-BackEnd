@@ -25,6 +25,7 @@ mysqlConnection.open(conn);
 //채널 단위 업데이트
 ChannelUpdate = (callback) => {
   const nowDate = new Date();
+  const data = [];
   let hasDate;
   conn.query(
     'select id, channelid, List_Lastupdate from Wd_channelid;',
@@ -33,9 +34,9 @@ ChannelUpdate = (callback) => {
         console.log(err);
       } else {
         console.log('(ChannleUpdate)현재 일입니다. : ' + nowDate.getDate());
-        for (let idNum = 0; idNum < rows.length; idNum++) {
-          const channelId = rows[idNum].channelid;
-          hasDate = new Date(rows[idNum].List_Lastupdate);
+        for (let num = 0; num < rows.length; num++) {
+          const channelId = rows[num].channelid;
+          hasDate = new Date(rows[num].List_Lastupdate);
           hasDate.setHours(hasDate.getHours() + 9);
           // hasDate.setHours(hasDate.getHours() - 24); //test code
           console.log(
@@ -52,27 +53,30 @@ ChannelUpdate = (callback) => {
             nowDate.getMinutes() === hasDate.getMinutes()
           ) {
             //현재 시간과 업뎃 시간이 같다면
+            console.log('사실' + JSON.stringify(rows[num], null, 2));
             continue;
           } else {
-            async.waterfall(
-              [
-                function (callback) {
-                  callback(null, undefined, channelId);
-                },
-                PlayList,
-              ],
-              function (err, result) {
-                if (err) {
-                  console.log('에러입니다 : ' + err);
-                } else {
-                  console.log('Playlist 완료...');
-                }
-              }
-            );
+            data.push(channelId);
+            // async.waterfall(
+            //   [
+            //     function (callback) {
+            //       callback(null, undefined, channelId);
+            //     },
+            //     PlayList,
+            //   ],
+            //   function (err, result) {
+            //     if (err) {
+            //       console.log('에러입니다 : ' + err);
+            //     } else {
+            //       console.log('Playlist 완료...');
+            //     }
+            //   }
+            // );
             UpdateTime('Wd_channelid', 'channelid', channelId);
           }
         }
-        return callback(null, nowDate);
+        console.log('ChannelUpdate' + data);
+        return callback(null, data, nowDate);
       }
     }
   );
@@ -80,7 +84,7 @@ ChannelUpdate = (callback) => {
 
 //웹드라마 업데이트
 DramaUpdate = (nowDate, callback) => {
-  let hasDate;
+  const idList = [];
   conn.query(
     'select List_Playlistid, List_Lastupdate from Webdrama_Episodelist;',
     function (err, rows) {
@@ -88,9 +92,9 @@ DramaUpdate = (nowDate, callback) => {
         console.log(err);
       } else {
         console.log('(DramaUpdate)현재 일입니다. : ' + nowDate.getDate());
-        for (let idNum = 0; idNum < rows.length; idNum++) {
-          const dramaId = rows[idNum].List_Playlistid; //List_Playlistid
-          hasDate = new Date(rows[idNum].List_Lastupdate);
+        for (let num = 0; num < rows.length; num++) {
+          const dramaId = rows[num].List_Playlistid; //List_Playlistid
+          const hasDate = new Date(rows[num].List_Lastupdate);
           hasDate.setHours(hasDate.getHours() + 9);
           // hasDate.setHours(hasDate.getHours() - 24); //test code
           console.log(
@@ -108,66 +112,43 @@ DramaUpdate = (nowDate, callback) => {
             //현재 시간과 업뎃 시간이 같다면?
             continue;
           } else {
-            async.waterfall(
-              [
-                function (callback) {
-                  callback(null, undefined, dramaId);
-                },
-                PlayListItem,
-              ],
-              function (err, result) {
-                if (err) {
-                  console.log('에러입니다 : ' + err);
-                } else {
-                  console.log('PlaylistItem 완료...');
-                }
-              }
-            );
-            // PlayListItem(undefined, dramaId);
+            idList.push(dramaId);
           }
         }
-        return callback(null, nowDate);
+        return callback(null, idList, nowDate);
       }
     }
   );
 };
 
 //드라마 목록 업데이트
-DramaListUpdate = (nowDate, callback) => {
-  // const dateNow = nowDate.getDate();
-  // const hourNow = nowDate.getHours();
-  let hasDate;
-  conn.query(
-    'select Up_Playlistid, Up_Videoid, List_Lastupdate from Webdrama_Upload;',
-    function (err, rows) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('(DramaListUpdate)현재 일입니다. : ' + nowDate.getDate());
-        for (let idNum = 0; idNum < rows.length; idNum++) {
-          const videoId = rows[idNum].Up_Videoid;
-          hasDate = new Date(rows[idNum].List_Lastupdate);
-          hasDate.setHours(hasDate.getHours() + 9);
-          // hasDate.setHours(hasDate.getHours() - 24); //test code
-          console.log(
-            videoId +
-              '의 (DramaListUpdate)마지막 업데이트 된 일입니다. : ' +
-              hasDate.getDate()
-          );
-          if (
-            nowDate.getDate() === hasDate.getDate() &&
-            nowDate.getHours() === hasDate.getHours()
-          ) {
-            //현재 날짜와 시간과 업뎃 날짜와 시간이 같다면
-            Videofunc(videoId);
-          } else {
-            continue;
-          }
-        }
-        return callback(null);
-      }
+PlayListItemQuery = (nowDate, callback) => {
+  conn.query('select Up_Videoid from Webdrama_Upload;', function (err, rows) {
+    if (err) {
+      console.log(err);
+    } else {
+      return callback(null, rows);
     }
-  );
+  });
+};
+
+VideoFuncQuery = (data, callback) => {
+  const wareHouse = [];
+  conn.query('select Videoid from Episode_Video;', function (err, rows) {
+    if (err) {
+      console.log(err);
+    } else {
+      for (let num = 0; num < data.length; num++) {
+        wareHouse.push(data[num].Up_Videoid);
+      }
+      for (let num = 0; num < rows.length; num++) {
+        wareHouse.push(rows[num].Videoid);
+      }
+      const requestAPI = new Set(wareHouse);
+      console.log('VideoFuncQuery' + requestAPI);
+    }
+    return callback(null);
+  });
 };
 
 ////////////////////////////
@@ -183,10 +164,8 @@ UpdateTime = (tableName, column, id) => {
       console.log(err);
     } else {
       console.log(
-        '(UpdateTime) 채널 업데이트 완료...' + JSON.stringify(rows, null, 4)
+        '(UpdateTime)업데이트 완료...' + JSON.stringify(rows, null, 4)
       );
-      const test = rows.changedRows;
-      console.log('(UpdateTime)업데이트 데이터 수 : ' + test);
     }
   });
 };
@@ -199,9 +178,9 @@ UpdateTime = (tableName, column, id) => {
 ////////////////////////////
 
 // playlist Module을 사용하는 함수입니다.
-PlayList = (token, id, callback) => {
-  for (let a = 0; a < 2; a++) {
-    Playlist.Data(token, id, (response) => {
+PlayList = (id, nowDate, callback) => {
+  for (let num = 0; num < id.length; num++) {
+    Playlist.Data(undefined, id[num], (response) => {
       // console.log('PlayList : ' + JSON.stringify(response, null, 4));
       const sql =
         'INSERT IGNORE INTO Webdrama_Episodelist(List_Playlistid, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES ?;'; // 컬럼은 따로 변경 부탁드립니다.
@@ -209,51 +188,59 @@ PlayList = (token, id, callback) => {
         if (err) {
           console.log(err);
         } else {
-          console.log('Playlist API에서 ' + id + ' 데이터 요청완료...');
+          console.log('Playlist API에서 ' + id[num] + ' 데이터 요청완료...');
         }
       });
     });
   }
-  return callback(null);
+  return callback(null, nowDate);
 };
 
 // playlistItem Module을 사용하는 함수입니다.
-PlayListItem = (token, id, callback) => {
-  PlaylistItem.Data(token, id, (response) => {
-    const sql =
-      'INSERT IGNORE INTO Webdrama_Upload(Up_Playlistid, Up_Channelid, Up_Videoid) VALUES?;'; // 컬럼은 따로 변경 부탁드립니다.
-    conn.query(sql, [response], function (err, rows, fields) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('PlaylistItem API에서 ' + id + ' 데이터 요청완료...');
-        console.log(
-          'PlaylistItem에서 요청한 데이터 : ' +
-            JSON.stringify(rows.affectedRows, 4, null)
-        );
-        if (rows.affectedRows > 0) {
-          //insert data가 최종적으로 1개이상이면...
-          UpdateTime('Webdrama_Episodelist', 'List_Playlistid', id);
+PlayListItem = (id, nowDate, callback) => {
+  for (let num = 0; num < id.length; num++) {
+    PlaylistItem.Data(undefined, id[num], (response) => {
+      const sql =
+        'INSERT IGNORE INTO Webdrama_Upload(Up_Playlistid, Up_Channelid, Up_Videoid) VALUES?;'; // 컬럼은 따로 변경 부탁드립니다.
+      conn.query(sql, [response], function (err, rows, fields) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(
+            'PlaylistItem API에서 ' + id[num] + ' 데이터 요청완료...'
+          );
+          console.log(
+            'PlaylistItem에서 Insert된 데이터 : ' +
+              JSON.stringify(rows.affectedRows, 2, null)
+          );
+          if (rows.affectedRows > 0) {
+            //insert data가 최종적으로 1개이상이면...
+            UpdateTime('Webdrama_Episodelist', 'List_Playlistid', id[[num]]);
+          }
         }
-      }
+      });
     });
-  });
-  return callback(null);
+  }
+  return callback(null, nowDate);
 };
 
 // Video Module을 사용하는 함수입니다.
-Videofunc = (id) => {
-  Video.Data(id, (response) => {
-    const sql =
-      'INSERT IGNORE INTO Episode_Video(Videoid, Title, Description, ChannelId, Like_Count) VALUES?;';
-    conn.query(sql, [response], function (err, rows, fields) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Video API에서 ' + id + ' 데이터 요청완료...');
-      }
+Videofunc = (id, callback) => {
+  console.log('Video : ' + id);
+  for (let num = 0; num < id.length; num++) {
+    Video.Data(id[num], (response) => {
+      const sql =
+        'INSERT IGNORE INTO Episode_Video(Videoid, Title, Description, ChannelId, Like_Count) VALUES?;';
+      conn.query(sql, [response], function (err, rows, fields) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Video API에서 ' + id[num] + ' 데이터 요청완료...');
+        }
+      });
+      return callback(null);
     });
-  });
+  }
 };
 
 ////////////////////////////
@@ -275,8 +262,26 @@ Videofunc = (id) => {
 ////////////////////////////
 //test스케쥴러
 ////////////////////////////
-async.waterfall(
+/*async.waterfall(
   [ChannelUpdate, DramaUpdate, DramaListUpdate],
+  (err, result) => {
+    if (err) {
+      console.log('에러입니다 : ' + err);
+    } else {
+      console.log('스케쥴러 완료');
+    }
+  }
+);*/
+
+async.waterfall(
+  [
+    ChannelUpdate,
+    PlayList,
+    DramaUpdate,
+    PlayListItem,
+    PlayListItemQuery,
+    VideoFuncQuery,
+  ],
   (err, result) => {
     if (err) {
       console.log('에러입니다 : ' + err);
