@@ -53,25 +53,9 @@ ChannelUpdate = (callback) => {
             nowDate.getMinutes() === hasDate.getMinutes()
           ) {
             //현재 시간과 업뎃 시간이 같다면
-            console.log('사실' + JSON.stringify(rows[num], null, 2));
             continue;
           } else {
             data.push(channelId);
-            // async.waterfall(
-            //   [
-            //     function (callback) {
-            //       callback(null, undefined, channelId);
-            //     },
-            //     PlayList,
-            //   ],
-            //   function (err, result) {
-            //     if (err) {
-            //       console.log('에러입니다 : ' + err);
-            //     } else {
-            //       console.log('Playlist 완료...');
-            //     }
-            //   }
-            // );
             UpdateTime('Wd_channelid', 'channelid', channelId);
           }
         }
@@ -123,31 +107,42 @@ DramaUpdate = (nowDate, callback) => {
 
 //드라마 목록 업데이트
 PlayListItemQuery = (nowDate, callback) => {
-  conn.query('select Up_Videoid from Webdrama_Upload;', function (err, rows) {
+  const sql = `select GROUP_CONCAT(Up_Videoid SEPARATOR '') from Webdrama_Upload;`;
+  const testsql = `select Up_Videoid from Webdrama_Upload;`;
+  conn.query(testsql, function (err, rows) {
     if (err) {
       console.log(err);
     } else {
-      return callback(null, rows);
+      console.log('테스트중입니다. : ' + JSON.stringify(rows[0], null, 2));
+      const pakageData = [];
+      for (let num = 0; num < rows.length; num++) {
+        pakageData.push(rows[num].Up_Videoid);
+      }
+      console.log('테스트중입니다2. : ' + pakageData);
+      return callback(null, pakageData);
     }
   });
 };
 
 VideoFuncQuery = (data, callback) => {
-  const wareHouse = [];
-  conn.query('select Videoid from Episode_Video;', function (err, rows) {
+  const sql = `select GROUP_CONCAT(Videoid SEPARATOR ',') from Episode_Video;`;
+  const testsql = `select Videoid from Episode_Video;`;
+  conn.query(testsql, function (err, rows) {
     if (err) {
       console.log(err);
     } else {
-      for (let num = 0; num < data.length; num++) {
-        wareHouse.push(data[num].Up_Videoid);
-      }
+      const gemstone = [];
       for (let num = 0; num < rows.length; num++) {
-        wareHouse.push(rows[num].Videoid);
+        gemstone.push(rows[num].Videoid);
       }
-      const requestAPI = new Set(wareHouse);
-      console.log('VideoFuncQuery' + requestAPI);
+      console.log('테스트중입니다3. : ' + JSON.stringify(gemstone, null, 2));
+      const searchData = data.filter(function (item, index) {
+        console.log(gemstone.indexOf(item));
+        return gemstone.indexOf(item) === -1;
+      }); //중복되지 않은 값만 불러오기
+      console.log('검색해야할 데이터 : ' + searchData);
+      return callback(null, searchData);
     }
-    return callback(null);
   });
 };
 
@@ -238,9 +233,9 @@ Videofunc = (id, callback) => {
           console.log('Video API에서 ' + id[num] + ' 데이터 요청완료...');
         }
       });
-      return callback(null);
     });
   }
+  return callback(null);
 };
 
 ////////////////////////////
@@ -281,6 +276,7 @@ async.waterfall(
     PlayListItem,
     PlayListItemQuery,
     VideoFuncQuery,
+    Videofunc,
   ],
   (err, result) => {
     if (err) {
