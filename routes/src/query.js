@@ -105,11 +105,11 @@ DramaUpdate = (nowDate, callback) => {
   );
 };
 
-//드라마 목록 업데이트
+//유튜브에서 추출한 Video id query
 PlayListItemQuery = (nowDate, callback) => {
-  const sql = `select GROUP_CONCAT(Up_Videoid SEPARATOR '') from Webdrama_Upload;`;
-  const testsql = `select Up_Videoid from Webdrama_Upload;`;
-  conn.query(testsql, function (err, rows) {
+  // const sql = `select GROUP_CONCAT(Up_Videoid SEPARATOR '') from Webdrama_Upload;`;
+  const sql = `select Up_Videoid from Webdrama_Upload;`;
+  conn.query(sql, function (err, rows) {
     if (err) {
       console.log(err);
     } else {
@@ -124,10 +124,11 @@ PlayListItemQuery = (nowDate, callback) => {
   });
 };
 
+//데이터 비교 후, 모자라 데이터 있으면 다시 채우기
 VideoFuncQuery = (data, callback) => {
-  const sql = `select GROUP_CONCAT(Videoid SEPARATOR ',') from Episode_Video;`;
-  const testsql = `select Videoid from Episode_Video;`;
-  conn.query(testsql, function (err, rows) {
+  // const sql = `select GROUP_CONCAT(Videoid SEPARATOR ',') from Episode_Video;`;
+  const sql = `select Videoid from Episode_Video;`;
+  conn.query(sql, function (err, rows) {
     if (err) {
       console.log(err);
     } else {
@@ -136,13 +137,26 @@ VideoFuncQuery = (data, callback) => {
         gemstone.push(rows[num].Videoid);
       }
       console.log('테스트중입니다3. : ' + JSON.stringify(gemstone, null, 2));
-      const searchData = data.filter(function (item, index) {
+      const searchData = data.filter((item, index) => {
         console.log(gemstone.indexOf(item));
         return gemstone.indexOf(item) === -1;
       }); //중복되지 않은 값만 불러오기
       console.log('검색해야할 데이터 : ' + searchData);
       return callback(null, searchData);
     }
+  });
+};
+
+//일주일 단위로 주간 인기작품 카운트 수 초기화
+InitializationOfPopularity = (callback) => {
+  const sql = `UPDATE Webdrama_Episodelist SET Viewcountweek = 0`;
+  conn.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('인기작품 리스트 초기화 완료' + rows);
+    }
+    return callback(null);
   });
 };
 
@@ -176,7 +190,6 @@ UpdateTime = (tableName, column, id) => {
 PlayList = (id, nowDate, callback) => {
   for (let num = 0; num < id.length; num++) {
     Playlist.Data(undefined, id[num], (response) => {
-      // console.log('PlayList : ' + JSON.stringify(response, null, 4));
       const sql =
         'INSERT IGNORE INTO Webdrama_Episodelist(List_Playlistid, List_Title, List_Description, List_PublishedAt, List_Channelid, List_ChannelTitle, List_Thumnails) VALUES ?;'; // 컬럼은 따로 변경 부탁드립니다.
       conn.query(sql, [response], (err, rows, fields) => {
@@ -241,18 +254,36 @@ Videofunc = (id, callback) => {
 ////////////////////////////
 //스케쥴러
 ////////////////////////////
-/*schedule.scheduleJob('0 * * * * *', function () {
+schedule.scheduleJob('0 0 21 * * *', function () {
   async.waterfall(
-    [ChannelUpdate, DramaUpdate, DramaListUpdate],
+    [
+      ChannelUpdate,
+      PlayList,
+      DramaUpdate,
+      PlayListItem,
+      PlayListItemQuery,
+      VideoFuncQuery,
+      Videofunc,
+    ],
     (err, result) => {
       if (err) {
         console.log('에러입니다 : ' + err);
       } else {
-        console.log('스케쥴러 완료');
+        console.log('새로고침 완료 . . .');
       }
     }
   );
-});*/
+});
+
+schedule.scheduleJob('0 0 0 * * 1', function () {
+  async.series([InitializationOfPopularity], (err, result) => {
+    if (err) {
+      console.log('에러입니다.' + err);
+    } else {
+      console.log('스케쥴러 완료');
+    }
+  });
+});
 
 ////////////////////////////
 //test스케쥴러
@@ -268,7 +299,8 @@ Videofunc = (id, callback) => {
   }
 );*/
 
-async.waterfall(
+//드라마 목록 새로고침 스케쥴러
+/*async.waterfall(
   [
     ChannelUpdate,
     PlayList,
@@ -285,4 +317,13 @@ async.waterfall(
       console.log('스케쥴러 완료');
     }
   }
-);
+);*/
+
+//주간 인기도 초기화 스케쥴러
+/*async.series([InitializationOfPopularity], (err, result) => {
+  if (err) {
+    console.log('에러입니다.' + err);
+  } else {
+    console.log('스케쥴러 완료');
+  }
+});*/
